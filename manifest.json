@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "name": "stock-analysis",
+  "description": "Reusable A-share stock analysis skill suite for agent apps.",
+  "generated_for": "generic-agents",
+  "default_entrypoint": "skills/a-share-stock-analysis/SKILL.md",
+  "skills": [
+    {
+      "id": "a-share-stock-analysis",
+      "name": "a-share-stock-analysis",
+      "entrypoint": "skills/a-share-stock-analysis/SKILL.md",
+      "path": "skills/a-share-stock-analysis",
+      "description": "Use when analyzing A-share market data, hotspots, individual stocks, user holdings, market risk, or evidence-based trade decision support.",
+      "resource_dirs": [
+        "agents",
+        "references",
+        "scripts",
+        "templates",
+        "workflows"
+      ]
+    }
+  ],
+  "recommended_generic_agent_files": [
+    "manifest.json",
+    "docs/CONNECTING_AGENTS.md",
+    "docs/TRIGGER_EVALS.md",
+    "skills/a-share-stock-analysis/SKILL.md"
+  ]
+}
+

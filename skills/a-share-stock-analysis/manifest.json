@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "name": "a-share-stock-analysis",
+  "version": "0.1.0",
+  "entrypoint": "SKILL.md",
+  "generated_for": "generic-agents",
+  "workflows": [
+    "workflows/data-discovery/WORKFLOW.md",
+    "workflows/data-validation/WORKFLOW.md",
+    "workflows/market-hotspots/WORKFLOW.md",
+    "workflows/market-analysis/WORKFLOW.md",
+    "workflows/stock-analysis/WORKFLOW.md",
+    "workflows/portfolio-review/WORKFLOW.md",
+    "workflows/recommendation/WORKFLOW.md"
+  ],
+  "references": [
+    "references/a-share-domain.md",
+    "references/data-sources.md",
+    "references/output-schemas.md",
+    "references/risk-policy.md",
+    "references/validation-checklist.md"
+  ],
+  "scripts": [
+    "scripts/validate_holdings_csv.py",
+    "scripts/validate_market_dataset.py"
+  ],
+  "templates": [
+    "templates/daily-market-report.md",
+    "templates/portfolio-review.md",
+    "templates/stock-report.md"
+  ]
+}
+

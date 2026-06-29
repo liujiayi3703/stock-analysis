@@ -1,0 +1,7 @@
+interface:
+  display_name: "A-Share Stock Analysis"
+  short_description: "Analyze A-share data, hotspots, stocks, holdings, and risk-aware trading suggestions."
+  default_prompt: "Use $a-share-stock-analysis to validate my A-share data, find market hotspots, and produce risk-aware market or stock suggestions."
+policy:
+  allow_implicit_invocation: true
+
