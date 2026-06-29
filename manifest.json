@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "stock-analysis",
-  "description": "Reusable A-share stock analysis skill suite for agent apps.",
+  "description": "Reusable stock-analysis skill library for A-share workflows and Serenity equity research frameworks.",
   "generated_for": "generic-agents",
   "default_entrypoint": "skills/a-share-stock-analysis/SKILL.md",
   "skills": [
@@ -18,13 +18,77 @@
         "templates",
         "workflows"
       ]
+    },
+    {
+      "id": "serenity-alpha",
+      "name": "serenity-alpha",
+      "entrypoint": "skills/serenity-alpha/SKILL.md",
+      "path": "skills/serenity-alpha",
+      "description": "Use when translating market news, product launches, demand changes, supply-chain clues, or technology breakthroughs into investable alpha hypotheses and validation paths.",
+      "source_repository": "haskaomni/serenity-skill",
+      "resource_dirs": [
+        "agents",
+        "references"
+      ]
+    },
+    {
+      "id": "bayesian-intrinsic-growth-valuation",
+      "name": "bayesian-intrinsic-growth-valuation",
+      "entrypoint": "skills/bayesian-intrinsic-growth-valuation/SKILL.md",
+      "path": "skills/bayesian-intrinsic-growth-valuation",
+      "description": "Use when evaluating a company's intrinsic 3-5 year growth with Bayesian hypothesis updates, market-implied growth, valuation, FOMO, fundamentals, TAM, and industry-cycle evidence.",
+      "source_repository": "haskaomni/serenity-skill",
+      "resource_dirs": [
+        "agents",
+        "references"
+      ]
+    },
+    {
+      "id": "gf-dma-health-index",
+      "name": "gf-dma-health-index",
+      "entrypoint": "skills/gf-dma-health-index/SKILL.md",
+      "path": "skills/gf-dma-health-index",
+      "description": "Use when scoring whether a stock's valuation and trend health are supported by fundamental growth, DMA structure, divergence, escape ratio, and estimate revisions.",
+      "source_repository": "haskaomni/serenity-skill",
+      "resource_dirs": [
+        "agents",
+        "references"
+      ]
+    },
+    {
+      "id": "tam-adj-peg",
+      "name": "tam-adj-peg",
+      "entrypoint": "skills/tam-adj-peg/SKILL.md",
+      "path": "skills/tam-adj-peg",
+      "description": "Use when evaluating growth-stock valuation with TAM-adjusted PEG, growth runway, business quality, pricing power, cyclicality, dilution, and execution risk.",
+      "source_repository": "haskaomni/serenity-skill",
+      "resource_dirs": [
+        "agents",
+        "references"
+      ]
+    },
+    {
+      "id": "buy-side-equity-research-memo",
+      "name": "buy-side-equity-research-memo",
+      "entrypoint": "skills/buy-side-equity-research-memo/SKILL.md",
+      "path": "skills/buy-side-equity-research-memo",
+      "description": "Use when generating source-backed buy-side equity research memos, investment committee notes, target-price scenarios, SOTP analysis, catalysts, risks, and monitoring dashboards.",
+      "source_repository": "haskaomni/serenity-skill",
+      "resource_dirs": [
+        "agents",
+        "references"
+      ]
     }
   ],
   "recommended_generic_agent_files": [
     "manifest.json",
     "docs/CONNECTING_AGENTS.md",
     "docs/TRIGGER_EVALS.md",
-    "skills/a-share-stock-analysis/SKILL.md"
+    "skills/a-share-stock-analysis/SKILL.md",
+    "skills/serenity-alpha/SKILL.md",
+    "skills/bayesian-intrinsic-growth-valuation/SKILL.md",
+    "skills/gf-dma-health-index/SKILL.md",
+    "skills/tam-adj-peg/SKILL.md",
+    "skills/buy-side-equity-research-memo/SKILL.md"
   ]
 }
-
