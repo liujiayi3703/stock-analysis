@@ -37,6 +37,16 @@ Run the stages in order unless the user asks for a specific stage:
 | 6. Thesis validation | `workflows/thesis-validation/WORKFLOW.md` | Reject fake narratives, concept chasing, and weak evidence |
 | 7. Shortlist ranking | `workflows/shortlist-ranking/WORKFLOW.md` | Rank candidates and produce a conditional action shortlist |
 
+## Optional Specialist Workflows
+
+Load these only when the user's request matches the need:
+
+| Need | Read first | Also read |
+|---|---|---|
+| Three-lens decision review combining macro, supply-chain chokepoints, and execution timing | `workflows/three-lens-decision/WORKFLOW.md` | `references/three-lens-framework.md` |
+| Source-backed individual stock research, target price scenarios, stop-loss, and entry plan | `workflows/source-backed-research/WORKFLOW.md` | `references/source-backed-research-checklist.md` |
+| Macro event or central-bank speech digest for market impact and expectation gaps | `workflows/macro-event-digest/WORKFLOW.md` | `references/macro-event-framework.md` |
+
 ## Sub-Skill Routing
 
 Use these existing skills as specialist modules:
@@ -74,3 +84,6 @@ Stop or downgrade confidence when:
 - the stock is ST, under delisting risk, or has material unresolved governance risk
 - technical strength contradicts fundamentals and cannot be explained
 
+## Source Discipline
+
+This suite may learn from public repositories and articles, but agents must not copy third-party text or code unless licensing allows it and attribution is preserved. See `../../docs/THIRD_PARTY_SOURCES.md` for source notes.

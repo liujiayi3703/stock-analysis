@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "stock-analysis",
-  "description": "Reusable stock-analysis skill library for AI stock picking, A-share workflows, and Serenity equity research frameworks.",
+  "description": "Reusable stock-analysis skill library for AI stock picking, A-share workflows, trade-signal validation, macro-event digestion, and Serenity equity research frameworks.",
   "generated_for": "generic-agents",
   "default_entrypoint": "skills/ai-stock-picking/SKILL.md",
   "skills": [
@@ -10,7 +10,7 @@
       "name": "ai-stock-picking",
       "entrypoint": "skills/ai-stock-picking/SKILL.md",
       "path": "skills/ai-stock-picking",
-      "description": "Use when running a sector-first AI stock-picking workflow: find sectors, map industry chains, screen companies, validate fundamentals and technicals, reject fake narratives, and produce a risk-aware shortlist.",
+      "description": "Use when running a sector-first AI stock-picking workflow: find sectors, map industry chains, screen companies, validate fundamentals and technicals, run three-lens decisions, digest macro events, and produce risk-aware shortlists or research reports.",
       "resource_dirs": [
         "agents",
         "references",
@@ -23,7 +23,7 @@
       "name": "a-share-stock-analysis",
       "entrypoint": "skills/a-share-stock-analysis/SKILL.md",
       "path": "skills/a-share-stock-analysis",
-      "description": "Use when analyzing A-share market data, hotspots, individual stocks, user holdings, market risk, or evidence-based trade decision support.",
+      "description": "Use when analyzing A-share market data, hotspots, individual stocks, user holdings, trade-signal files, market risk, or evidence-based trade decision support.",
       "resource_dirs": [
         "agents",
         "references",
@@ -97,6 +97,7 @@
     "manifest.json",
     "docs/CONNECTING_AGENTS.md",
     "docs/TRIGGER_EVALS.md",
+    "docs/THIRD_PARTY_SOURCES.md",
     "skills/ai-stock-picking/SKILL.md",
     "skills/a-share-stock-analysis/SKILL.md",
     "skills/serenity-alpha/SKILL.md",

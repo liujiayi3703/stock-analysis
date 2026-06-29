@@ -20,6 +20,7 @@ From the repository root:
 ```powershell
 python skills/a-share-stock-analysis/scripts/validate_holdings_csv.py --help
 python skills/a-share-stock-analysis/scripts/validate_market_dataset.py --help
+python skills/a-share-stock-analysis/scripts/validate_trade_signals.py --help
 python -m compileall skills/a-share-stock-analysis/scripts
 ```
 

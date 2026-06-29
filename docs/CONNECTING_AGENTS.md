@@ -13,8 +13,8 @@ Use this repository as a skill library for AI stock-picking agents, A-share anal
 
 | User intent | Entrypoint |
 |---|---|
-| AI选股, find sectors first, map industry chains, screen companies, build a stock shortlist | `skills/ai-stock-picking/SKILL.md` |
-| A-share market data, hotspots, market regime, individual stocks, holdings, or trading suggestions | `skills/a-share-stock-analysis/SKILL.md` |
+| AI选股, find sectors first, map industry chains, screen companies, build a stock shortlist, run three-lens decisions, source-backed ticker research, or macro-event digestion | `skills/ai-stock-picking/SKILL.md` |
+| A-share market data, hotspots, market regime, individual stocks, holdings, trade-signal CSV files, or trading suggestions | `skills/a-share-stock-analysis/SKILL.md` |
 | Market news to alpha hypothesis, demand-chain impact, small-cap beneficiaries, validation path | `skills/serenity-alpha/SKILL.md` |
 | Bayesian intrinsic growth, market-implied growth, FOMO versus fundamentals | `skills/bayesian-intrinsic-growth-valuation/SKILL.md` |
 | GF-DMA trend/valuation health, DMA divergence, escape risk, estimate revisions | `skills/gf-dma-health-index/SKILL.md` |
@@ -59,6 +59,9 @@ Common AI stock-picking stages:
 - Technical assist: `workflows/technical-assist/WORKFLOW.md`
 - Thesis validation: `workflows/thesis-validation/WORKFLOW.md`
 - Shortlist ranking: `workflows/shortlist-ranking/WORKFLOW.md`
+- Three-lens decision review: `workflows/three-lens-decision/WORKFLOW.md`
+- Source-backed stock research: `workflows/source-backed-research/WORKFLOW.md`
+- Macro event digest: `workflows/macro-event-digest/WORKFLOW.md`
 
 Common A-share stages:
 
@@ -67,6 +70,7 @@ Common A-share stages:
 - Individual stock analysis: `workflows/stock-analysis/WORKFLOW.md`
 - Holdings review: `workflows/portfolio-review/WORKFLOW.md`
 - Data validation: `workflows/data-validation/WORKFLOW.md`
+- Trade-signal quality gate: `workflows/signal-quality-gate/WORKFLOW.md`
 - Trading suggestion: `workflows/recommendation/WORKFLOW.md`
 
 Serenity skills are standalone skills. Their supporting framework material lives in each skill's `references/original-framework.md`.

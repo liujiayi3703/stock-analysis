@@ -33,6 +33,7 @@ Never present a buy or sell suggestion without risk controls.
 | Analyze broad market conditions, indices, sentiment, liquidity, risk appetite | `workflows/market-analysis/WORKFLOW.md` | `references/a-share-domain.md`, `references/risk-policy.md` |
 | Analyze one stock or a watchlist | `workflows/stock-analysis/WORKFLOW.md` | `references/output-schemas.md`, `references/risk-policy.md` |
 | Review user-provided holdings or portfolio | `workflows/portfolio-review/WORKFLOW.md` | `references/output-schemas.md`, `references/risk-policy.md` |
+| Validate trade signals or simulated broker instruction files | `workflows/signal-quality-gate/WORKFLOW.md` | `references/trading-signal-schema.md`, `references/output-schemas.md` |
 | Produce final operation suggestions | `workflows/recommendation/WORKFLOW.md` | `references/risk-policy.md`, relevant report template |
 
 If the request spans multiple stages, run them in this order:
@@ -40,7 +41,7 @@ If the request spans multiple stages, run them in this order:
 1. Data discovery
 2. Data validation
 3. Market hotspot or market analysis
-4. Stock or portfolio analysis
+4. Stock, portfolio, or signal analysis
 5. Recommendation
 
 ## Input Contract
@@ -72,4 +73,4 @@ Every final analysis should include:
 
 - `scripts/validate_holdings_csv.py`: validate holdings CSV columns and basic numeric fields.
 - `scripts/validate_market_dataset.py`: validate common market dataset fields, dates, duplicates, and missing values.
-
+- `scripts/validate_trade_signals.py`: validate A-share trade-signal CSV files, duplicate signal IDs, lot sizes, directions, prices, and timestamps.

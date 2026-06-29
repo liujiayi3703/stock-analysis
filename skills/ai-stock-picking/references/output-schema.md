@@ -43,3 +43,30 @@ Use these sections for a complete AI stock-picking output.
 - invalidation condition
 - next data check
 
+## Three-Lens Decision
+
+- data snapshot and freshness
+- macro lens: tailwind, headwind, or wait
+- industry-chain lens: strong, mixed, or weak
+- execution lens: actionable, wait, or avoid
+- disagreement table
+- action framing and invalidation
+
+## Source-Backed Research
+
+- source inventory
+- business and chain role
+- fundamentals and valuation anchors
+- bear/base/bull target-price scenarios
+- operational stop versus fundamental downside
+- red flags and contradictions
+- next update trigger
+
+## Macro Event Digest
+
+- event snapshot
+- prior expectation
+- expectation gap
+- immediate market reaction
+- sector transmission
+- decision use and invalidation

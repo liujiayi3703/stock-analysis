@@ -63,6 +63,28 @@ Recommended:
 - `catalyst`
 - `source`
 
+## Trade Signal CSV
+
+Required:
+
+- `date`
+- `time`
+- `stock_code`
+- `direction`
+- `action`
+- `volume`
+- `price`
+- `signal_id`
+
+Rules:
+
+- `stock_code` should use `000001.SZ`, `600000.SH`, or `430000.BJ` style exchange suffixes.
+- `direction` must be `BUY` or `SELL`.
+- `action` must be `OPEN` or `CLOSE`.
+- `volume` must be a positive integer and normally a multiple of 100 shares.
+- `price` must be non-negative; `0` means market-order behavior must be confirmed with the broker.
+- `signal_id` must be unique for idempotency unless the file is explicitly a retry test.
+
 ## Report Sections
 
 Every market, stock, or portfolio report should include:
@@ -73,4 +95,3 @@ Every market, stock, or portfolio report should include:
 - contrary evidence
 - risk controls
 - next checks
-
