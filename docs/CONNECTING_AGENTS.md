@@ -1,6 +1,6 @@
 # Connecting Agents
 
-Use this repository as a skill library for A-share analysis agents and Serenity-style equity research agents.
+Use this repository as a skill library for AI stock-picking agents, A-share analysis agents, and Serenity-style equity research agents.
 
 ## Fast Path
 
@@ -13,6 +13,7 @@ Use this repository as a skill library for A-share analysis agents and Serenity-
 
 | User intent | Entrypoint |
 |---|---|
+| AI选股, find sectors first, map industry chains, screen companies, build a stock shortlist | `skills/ai-stock-picking/SKILL.md` |
 | A-share market data, hotspots, market regime, individual stocks, holdings, or trading suggestions | `skills/a-share-stock-analysis/SKILL.md` |
 | Market news to alpha hypothesis, demand-chain impact, small-cap beneficiaries, validation path | `skills/serenity-alpha/SKILL.md` |
 | Bayesian intrinsic growth, market-implied growth, FOMO versus fundamentals | `skills/bayesian-intrinsic-growth-valuation/SKILL.md` |
@@ -32,6 +33,7 @@ If the app expects one skill folder, point it at a specific folder under `skills
 
 ```text
 skills/a-share-stock-analysis/
+skills/ai-stock-picking/
 skills/serenity-alpha/
 ```
 
@@ -47,6 +49,16 @@ Then let the agent read referenced workflow or reference files on demand.
 ## Expected Agent Behavior
 
 Agents should not load the full repository by default. Start from the manifest, select one skill, then read the smallest needed set of files.
+
+Common AI stock-picking stages:
+
+- Sector scan: `workflows/macro-sector-scan/WORKFLOW.md`
+- Industry-chain map: `workflows/industry-chain-map/WORKFLOW.md`
+- Company screening: `workflows/company-screening/WORKFLOW.md`
+- Fundamental deep dive: `workflows/fundamental-deep-dive/WORKFLOW.md`
+- Technical assist: `workflows/technical-assist/WORKFLOW.md`
+- Thesis validation: `workflows/thesis-validation/WORKFLOW.md`
+- Shortlist ranking: `workflows/shortlist-ranking/WORKFLOW.md`
 
 Common A-share stages:
 

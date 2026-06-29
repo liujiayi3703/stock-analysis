@@ -1,0 +1,7 @@
+interface:
+  display_name: "AI Stock Picking"
+  short_description: "Sector-first stock picking pipeline."
+  default_prompt: "Use $ai-stock-picking to find promising sectors, map the industry chain, screen companies, validate fundamentals and technicals, and produce a risk-aware shortlist."
+policy:
+  allow_implicit_invocation: true
+

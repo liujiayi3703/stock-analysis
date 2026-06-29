@@ -1,10 +1,23 @@
 {
   "schema_version": 1,
   "name": "stock-analysis",
-  "description": "Reusable stock-analysis skill library for A-share workflows and Serenity equity research frameworks.",
+  "description": "Reusable stock-analysis skill library for AI stock picking, A-share workflows, and Serenity equity research frameworks.",
   "generated_for": "generic-agents",
-  "default_entrypoint": "skills/a-share-stock-analysis/SKILL.md",
+  "default_entrypoint": "skills/ai-stock-picking/SKILL.md",
   "skills": [
+    {
+      "id": "ai-stock-picking",
+      "name": "ai-stock-picking",
+      "entrypoint": "skills/ai-stock-picking/SKILL.md",
+      "path": "skills/ai-stock-picking",
+      "description": "Use when running a sector-first AI stock-picking workflow: find sectors, map industry chains, screen companies, validate fundamentals and technicals, reject fake narratives, and produce a risk-aware shortlist.",
+      "resource_dirs": [
+        "agents",
+        "references",
+        "templates",
+        "workflows"
+      ]
+    },
     {
       "id": "a-share-stock-analysis",
       "name": "a-share-stock-analysis",
@@ -84,6 +97,7 @@
     "manifest.json",
     "docs/CONNECTING_AGENTS.md",
     "docs/TRIGGER_EVALS.md",
+    "skills/ai-stock-picking/SKILL.md",
     "skills/a-share-stock-analysis/SKILL.md",
     "skills/serenity-alpha/SKILL.md",
     "skills/bayesian-intrinsic-growth-valuation/SKILL.md",

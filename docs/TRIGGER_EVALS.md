@@ -4,6 +4,10 @@ Use these prompts to smoke-test whether an agent selects the right skill and rou
 
 | Eval ID | Prompt | Expected Route |
 |---|---|---|
+| ai-stock-picking-full | 帮我用AI选股：先找未来6-12个月值得关注的赛道，再拆产业链，最后筛出高增长、高利润率、高议价权的公司。 | `ai-stock-picking` full pipeline |
+| sector-first | 不要直接给股票，先帮我判断钱可能流向哪些行业，再从产业链里找公司。 | `ai-stock-picking` -> `macro-sector-scan` then `industry-chain-map` |
+| three-high-screen | 在新能源/AI/机器人产业链里筛选三高公司：高增长、高利润率、高议价权，同时排除ST和蹭概念没业绩的票。 | `ai-stock-picking` -> `company-screening` and `thesis-validation` |
+| fundamental-technical-validation | 对初筛股票池做基本面深挖和技术面辅助，重点看ROE、现金流、负债率、趋势、支撑压力和MACD/RSI。 | `ai-stock-picking` -> `fundamental-deep-dive` then `technical-assist` |
 | market-hotspots | 今天A股有哪些主线热点？帮我从成交额、涨停、板块强度和新闻催化里验证。 | `a-share-stock-analysis` -> `market-hotspots` plus `data-validation` |
 | market-risk | 帮我判断现在大盘环境适不适合加仓，给出证据和风险边界。 | `a-share-stock-analysis` -> `market-analysis` then `recommendation` |
 | stock-analysis | 分析一下 600519 的趋势、基本面、资金和风险，给我操作建议。 | `a-share-stock-analysis` -> `stock-analysis` then `recommendation` |

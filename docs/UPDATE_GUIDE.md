@@ -4,13 +4,14 @@ Keep this suite easy for other agents to learn.
 
 ## Update Rules
 
-1. Keep `skills/a-share-stock-analysis/SKILL.md` short and router-focused.
-2. Put detailed A-share procedures in `workflows/*/WORKFLOW.md`.
-3. Put reusable facts, schemas, checklists, and policies in `references/`.
-4. Put deterministic checks in `scripts/`.
-5. Keep imported Serenity skills as independent folders under `skills/<skill-name>/`.
-6. Update root `manifest.json` when skill paths or descriptions change.
-7. Run validation before publishing changes.
+1. Keep `skills/ai-stock-picking/SKILL.md` as the sector-first stock-picking orchestrator.
+2. Keep `skills/a-share-stock-analysis/SKILL.md` short and A-share-analysis focused.
+3. Put detailed A-share and AI stock-picking procedures in `workflows/*/WORKFLOW.md`.
+4. Put reusable facts, schemas, checklists, and policies in `references/`.
+5. Put deterministic checks in `scripts/`.
+6. Keep imported Serenity skills as independent folders under `skills/<skill-name>/`.
+7. Update root `manifest.json` when skill paths or descriptions change.
+8. Run validation before publishing changes.
 
 ## Local Validation
 
@@ -26,6 +27,7 @@ Validate each skill folder with Codex's skill validator:
 
 ```powershell
 python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\a-share-stock-analysis
+python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\ai-stock-picking
 python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\serenity-alpha
 python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\bayesian-intrinsic-growth-valuation
 python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\gf-dma-health-index
