@@ -1,0 +1,145 @@
+{
+  "snapshot_time": "2026-07-01 21:15:40",
+  "source_screenshots": [
+    "E:\\生活中的资料\\学习资料\\投资理财\\stock\\Screenshot_2026-07-01-21-13-34-96_5c5979e609b9ed4a43e94260d67cf51e.jpg",
+    "E:\\生活中的资料\\学习资料\\投资理财\\stock\\Screenshot_2026-07-01-21-15-40-99_5c5979e609b9ed4a43e94260d67cf51e.jpg"
+  ],
+  "accounts": [
+    {
+      "account": "account_1",
+      "stock_value": 470629.0,
+      "cash": 107852.83
+    },
+    {
+      "account": "account_2",
+      "stock_value": 133439.0,
+      "cash": 31712.01
+    }
+  ],
+  "cash": 139564.84,
+  "stock_value": 604068.0,
+  "total_assets": 743632.84,
+  "holdings": [
+    {
+      "account": "account_1",
+      "code": "301382",
+      "name": "蜂助手",
+      "shares": 2100,
+      "cost_price": 46.98,
+      "last_price": 45.5,
+      "market_value": 95550.0,
+      "unrealized_pnl": -3107.85
+    },
+    {
+      "account": "account_1",
+      "code": "002579",
+      "name": "中京电子",
+      "shares": 4300,
+      "cost_price": 20.885,
+      "last_price": 21.41,
+      "market_value": 92063.0,
+      "unrealized_pnl": 2257.0
+    },
+    {
+      "account": "account_1",
+      "code": "301188",
+      "name": "力诺药包",
+      "shares": 1300,
+      "cost_price": 66.412,
+      "last_price": 63.4,
+      "market_value": 82420.0,
+      "unrealized_pnl": -3915.6
+    },
+    {
+      "account": "account_1",
+      "code": "300442",
+      "name": "润泽科技",
+      "shares": 900,
+      "cost_price": 92.78,
+      "last_price": 90.06,
+      "market_value": 81054.0,
+      "unrealized_pnl": -2448.17
+    },
+    {
+      "account": "account_1",
+      "code": "301373",
+      "name": "凌玮科技",
+      "shares": 400,
+      "cost_price": 199.731,
+      "last_price": 165.38,
+      "market_value": 66152.0,
+      "unrealized_pnl": -13740.35
+    },
+    {
+      "account": "account_1",
+      "code": "301511",
+      "name": "德福科技",
+      "shares": 200,
+      "cost_price": 153.474,
+      "last_price": 155.02,
+      "market_value": 31004.0,
+      "unrealized_pnl": 309.29
+    },
+    {
+      "account": "account_1",
+      "code": "301128",
+      "name": "强瑞技术",
+      "shares": 100,
+      "cost_price": 177.772,
+      "last_price": 155.78,
+      "market_value": 15578.0,
+      "unrealized_pnl": -2199.18
+    },
+    {
+      "account": "account_1",
+      "code": "002735",
+      "name": "王子新材",
+      "shares": 400,
+      "cost_price": 21.027,
+      "last_price": 17.02,
+      "market_value": 6808.0,
+      "unrealized_pnl": -1602.92
+    },
+    {
+      "account": "account_2",
+      "code": "605020",
+      "name": "永和股份",
+      "shares": 1900,
+      "cost_price": 39.796,
+      "last_price": 43.99,
+      "market_value": 83581.0,
+      "unrealized_pnl": 7968.39
+    },
+    {
+      "account": "account_2",
+      "code": "300433",
+      "name": "蓝思科技",
+      "shares": 500,
+      "cost_price": 53.812,
+      "last_price": 53.42,
+      "market_value": 26710.0,
+      "unrealized_pnl": -196.26
+    },
+    {
+      "account": "account_2",
+      "code": "605255",
+      "name": "天普股份",
+      "shares": 300,
+      "cost_price": 356.741,
+      "last_price": 68.9,
+      "market_value": 20670.0,
+      "unrealized_pnl": -86352.32
+    },
+    {
+      "account": "account_2",
+      "code": "300992",
+      "name": "泰福泵业",
+      "shares": 100,
+      "cost_price": 526.687,
+      "last_price": 24.78,
+      "market_value": 2478.0,
+      "unrealized_pnl": -50190.68
+    }
+  ]
+}
+

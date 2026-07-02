@@ -91,7 +91,46 @@ Every market, stock, or portfolio report should include:
 
 - data coverage
 - core conclusion
+- five-factor evidence summary when the request includes value/quality, financial health, fund-flow, growth/policy, or risk-avoidance analysis
 - evidence
 - contrary evidence
 - risk controls
 - next checks
+
+## Five-Factor Stock Review
+
+Use this schema for individual-stock or holding analysis when `references/five-factor-stock-selection.md` is loaded.
+
+Required:
+
+- `ticker`
+- `name`
+- `value_factor`
+- `quality_factor`
+- `fundamental_base`
+- `one_month_funds_trading`
+- `growth_policy`
+- `key_risks`
+- `action`
+- `trigger`
+- `invalidation`
+
+Recommended:
+
+- `market_regime`
+- `sector_context`
+- `valuation_note`
+- `main_fund_flow_1m`
+- `volume_ratio`
+- `turnover_rate`
+- `order_imbalance`
+- `target_weight_or_range`
+- `confidence`
+
+Allowed actions:
+
+- `watch`
+- `hold`
+- `add_only_if_triggered`
+- `reduce`
+- `exit`

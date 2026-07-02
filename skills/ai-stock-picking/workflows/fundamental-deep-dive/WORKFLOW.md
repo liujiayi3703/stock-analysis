@@ -13,17 +13,18 @@ Use this to validate whether screened companies have real business support.
    - asset-liability ratio and debt maturity
    - inventory, receivables, and working capital pressure
    - capex and order visibility
-3. Compare company metrics with sector peers.
-4. Check whether the company benefits from the selected profit-pool link.
-5. Use specialist skills when relevant:
+3. If `references/five-factor-stock-selection.md` is loaded, explicitly classify the fundamental base as strong, improving, mixed, weak, or data insufficient.
+4. Compare company metrics with sector peers.
+5. Check whether the company benefits from the selected profit-pool link.
+6. Use specialist skills when relevant:
    - `tam-adj-peg` for growth valuation
    - `bayesian-intrinsic-growth-valuation` for 3-5 year intrinsic growth
    - `buy-side-equity-research-memo` for full company memo
 
 ## Output
 
-| Ticker | Growth quality | Margin quality | Cash-flow quality | Leverage risk | Moat/pricing power | Fundamental verdict |
-|---|---|---|---|---|---|---|
+| Ticker | Profit trend | Cash-flow direction | Growth quality | Margin quality | Leverage risk | Moat/pricing power | Fundamental-base verdict |
+|---|---|---|---|---|---|---|---|
 
 ## Handoff
 

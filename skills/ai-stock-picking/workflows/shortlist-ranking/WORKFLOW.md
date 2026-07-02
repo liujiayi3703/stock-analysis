@@ -5,6 +5,7 @@ Use this at the end of the pipeline to rank candidates.
 ## Steps
 
 1. Combine sector score, profit-pool score, company quality, valuation, technical state, and risk flags.
+   - If `references/five-factor-stock-selection.md` was used, also carry forward value-factor, quality-factor, fundamental-base, 1-month capital-behavior, growth/policy, and risk-avoidance verdicts.
 2. Rank candidates by evidence quality, not only upside imagination.
 3. Assign action framing:
    - exclude
@@ -17,8 +18,8 @@ Use this at the end of the pipeline to rank candidates.
 
 ## Ranking Matrix
 
-| Ticker | Sector score | Chain score | Fundamental score | Valuation score | Technical score | Risk flags | Final rank |
-|---|---:|---:|---:|---:|---:|---|---:|
+| Ticker | Sector score | Chain score | Five-factor score | Fundamental score | Valuation score | Technical score | Risk flags | Final rank |
+|---|---:|---:|---:|---:|---:|---:|---|---:|
 
 ## Output
 

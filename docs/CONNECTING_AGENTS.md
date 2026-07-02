@@ -21,6 +21,24 @@ Use this repository as a skill library for AI stock-picking agents, A-share anal
 | TAM-adjusted PEG, growth runway, quality-adjusted growth valuation | `skills/tam-adj-peg/SKILL.md` |
 | Full buy-side equity research memo, target-price scenarios, catalysts, risks, monitoring dashboard | `skills/buy-side-equity-research-memo/SKILL.md` |
 
+## Five-Factor Routing Notes
+
+When a prompt mentions value factors, quality factors, promising domestic stocks, financial health, profit trend, cash-flow direction, 1-month main-fund flow, volume ratio, turnover, order imbalance / 委比, industry growth, policy support, or risk avoidance:
+
+- use `skills/ai-stock-picking/SKILL.md` for building or ranking a candidate stock pool
+- use `skills/a-share-stock-analysis/SKILL.md` for a known stock, watchlist, holding, or operation suggestion
+- load the selected skill's `references/five-factor-stock-selection.md`
+
+## Strategy Loop Routing Notes
+
+Use `skills/stock-strategy-loop/SKILL.md` when a prompt asks to:
+
+- use latest portfolio screenshots as the holding source
+- run "market analysis -> strategy generation -> simulation/backtest -> self-iteration/optimization"
+- create `.stock-loop/positions/positions.json`, `daily_signal.json`, `backtest_result.json`, or `strategy_params.json`
+- run a 3-year strict backtest with next-open execution
+- optimize only bounded parameters and rule weights without auto-ordering
+
 ## App Integration
 
 If the app supports a skills folder, point it at:
@@ -34,6 +52,7 @@ If the app expects one skill folder, point it at a specific folder under `skills
 ```text
 skills/a-share-stock-analysis/
 skills/ai-stock-picking/
+skills/stock-strategy-loop/
 skills/serenity-alpha/
 ```
 
@@ -55,6 +74,7 @@ Common AI stock-picking stages:
 - Sector scan: `workflows/macro-sector-scan/WORKFLOW.md`
 - Industry-chain map: `workflows/industry-chain-map/WORKFLOW.md`
 - Company screening: `workflows/company-screening/WORKFLOW.md`
+- Five-factor stock selection: `references/five-factor-stock-selection.md`
 - Fundamental deep dive: `workflows/fundamental-deep-dive/WORKFLOW.md`
 - Technical assist: `workflows/technical-assist/WORKFLOW.md`
 - Thesis validation: `workflows/thesis-validation/WORKFLOW.md`
@@ -68,10 +88,18 @@ Common A-share stages:
 - Market overview: `workflows/market-analysis/WORKFLOW.md`
 - Hotspot discovery: `workflows/market-hotspots/WORKFLOW.md`
 - Individual stock analysis: `workflows/stock-analysis/WORKFLOW.md`
+- Five-factor stock/holding review: `references/five-factor-stock-selection.md`
 - Holdings review: `workflows/portfolio-review/WORKFLOW.md`
 - Data validation: `workflows/data-validation/WORKFLOW.md`
 - Trade-signal quality gate: `workflows/signal-quality-gate/WORKFLOW.md`
 - Trading suggestion: `workflows/recommendation/WORKFLOW.md`
+
+Common stock strategy loop stages:
+
+- Screenshot scan: `scripts/run_loop.py scan-screenshots`
+- Positions extraction contract: `references/positions-schema.md`
+- Loop output contracts: `references/loop-contracts.md`
+- Loop runner: `scripts/run_loop.py run`
 
 Serenity skills are standalone skills. Their supporting framework material lives in each skill's `references/original-framework.md`.
 
@@ -90,6 +118,7 @@ For stock work:
 - analysis date
 - horizon
 - available price, volume, fundamentals, news, and sector data
+- for five-factor review: value/quality metrics, latest financials, 1-month fund-flow/trading-health fields, industry/policy evidence, and known risk events when available
 
 For holdings review:
 
@@ -98,3 +127,10 @@ For holdings review:
 - share count or weight
 - target horizon
 - risk tolerance or max drawdown preference
+
+For stock strategy loops:
+
+- workspace containing screenshots or an existing `.stock-loop/positions/positions.json`
+- `a-share-data` skill path if not installed in the default local location
+- whether to include event fetches
+- desired backtest end date if not today

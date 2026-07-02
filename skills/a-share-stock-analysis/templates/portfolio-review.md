@@ -1,5 +1,12 @@
 # Portfolio Review
 
+## Five-Factor Holding Review
+
+Use this section for material holdings or when the user asks for operation analysis using value/quality, fundamental base, capital behavior, growth/policy, and risk avoidance.
+
+| Stock | Weight/Shares | Role | Value factor | Quality factor | Fundamental base | 1-month funds/trading | Growth/policy | Key risks | Action | Trigger | Invalidation |
+|---|---:|---|---|---|---|---|---|---|---|---|---|
+
 ## 数据覆盖
 
 - 日期：

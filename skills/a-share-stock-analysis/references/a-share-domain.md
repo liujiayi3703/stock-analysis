@@ -10,6 +10,7 @@ Common A-share analysis dimensions:
 - Boards and styles: main board, ChiNext, STAR Market, Beijing Stock Exchange, ST and risk-warning stocks.
 - Trading behavior: daily limit-up/limit-down structure, turnover, auction behavior, sector rotation, thematic speculation.
 - Participants: retail flow, institutional flow, northbound flow if available, financing and securities lending where relevant.
+- Capital and trading-health indicators: 1-month main-fund flow, volume ratio, turnover rate, amount, relative volume, order imbalance / 委比, and sector-relative strength. Treat intraday order imbalance as auxiliary, not decisive.
 
 ## Common Theme Categories
 
@@ -24,6 +25,7 @@ Common A-share analysis dimensions:
 
 - A strong theme can still be late-cycle if leaders accelerate while followers weaken.
 - One-day turnover spikes are not enough; look for continuity and breadth.
+- One-day fund flow or 委比 is not enough; compare it with multi-session price-volume behavior, sector strength, and fundamental evidence.
 - Limit-up count without sector structure can be noise.
 - Good fundamentals do not automatically create a good entry.
 - Technical strength without catalyst freshness can reverse quickly.

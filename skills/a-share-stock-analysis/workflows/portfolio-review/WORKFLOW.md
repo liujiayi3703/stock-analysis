@@ -10,8 +10,9 @@ Use this when the user provides holdings, positions, cost basis, watchlists, or 
 4. Classify each holding by role: core, satellite, trade, hedge, watch, or error position.
 5. Measure concentration by sector, theme, market cap, and correlated catalysts.
 6. Review each stock using `stock-analysis` at the depth required by position size.
-7. Map actions: keep, add conditionally, reduce, replace, hedge, or watch.
-8. Provide portfolio-level risk controls.
+7. For material positions or operation-analysis requests, apply `references/five-factor-stock-selection.md` so each action has value/quality, fundamental-base, capital-behavior, growth/policy, and risk evidence.
+8. Map actions: keep, add conditionally, reduce, replace, hedge, or watch.
+9. Provide portfolio-level risk controls.
 
 ## Priority Rules
 
@@ -19,6 +20,7 @@ Use this when the user provides holdings, positions, cost basis, watchlists, or 
 - Losing positions need invalidation and recovery conditions, not emotional averaging-down.
 - Winning positions need trailing risk controls and catalyst freshness checks.
 - Theme concentration can be risky even when each stock looks acceptable alone.
+- A position with weak fundamentals and weak 1-month capital behavior should not be upgraded only because valuation looks cheap.
 
 ## Output
 

@@ -1,6 +1,6 @@
 # stock-analysis
 
-Reusable agent skills for AI-assisted stock picking, A-share market research, hotspot discovery, data validation, trade-signal audit, portfolio review, Serenity equity research frameworks, and evidence-based trading decision support.
+Reusable agent skills for AI-assisted stock picking, five-factor value/quality stock review, A-share market research, hotspot discovery, data validation, trade-signal audit, portfolio review, Serenity equity research frameworks, and evidence-based trading decision support.
 
 ## Entry Points
 
@@ -16,6 +16,12 @@ A-share analysis router:
 
 ```text
 skills/a-share-stock-analysis/SKILL.md
+```
+
+Holding strategy loop router:
+
+```text
+skills/stock-strategy-loop/SKILL.md
 ```
 
 Serenity framework skills:
@@ -45,11 +51,13 @@ For apps that cannot scan a skills directory, read `manifest.json` first, then l
 This skill library helps agents:
 
 - run a sector-first stock-picking pipeline
+- screen and review stocks with a five-factor value, quality, fundamental-base, capital-behavior, growth/policy, and risk framework
 - collect and inspect A-share market data
 - discover market hotspots and sector themes
 - validate data quality before analysis
 - produce market-level and stock-level analysis
 - review user-provided holdings
+- turn latest portfolio screenshots into a manual one-command loop: positions extraction, market analysis, strategy signal, 3-year backtest, bounded parameter optimization, Markdown report, and JSON outputs
 - map industry chains and identify profit pools
 - run three-lens decision reviews across macro, industry-chain, and execution timing
 - screen high-growth, high-margin, high-bargaining-power companies

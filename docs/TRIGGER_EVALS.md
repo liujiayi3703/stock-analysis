@@ -23,10 +23,28 @@ Use these prompts to smoke-test whether an agent selects the right skill and rou
 | tam-adj-peg | 这只成长股估值贵不贵？请用 TAM-Adj-PEG 看增长速度、增长空间和质量因子。 | `tam-adj-peg` |
 | buy-side-memo | 给我写一份买方风格个股深度研究 memo，包含目标价情景、催化剂、风险和监控指标。 | `buy-side-equity-research-memo` |
 
+## Five-Factor Trigger Evals
+
+| Eval ID | Prompt | Expected Route |
+|---|---|---|
+| five-factor-potential-screen | 通过价值因子和质量因子，帮我找到目前国内股市中最具潜力的股票，并继续检查基本盘、资金动向、行业政策和风险。 | `ai-stock-picking` -> `company-screening` plus `references/five-factor-stock-selection.md`, then `fundamental-deep-dive` and `shortlist-ranking` |
+| five-factor-stock-operation | 用价值质量、基本盘、近1个月主力资金、量比换手率委比、行业成长政策和风险五步法分析 605020，并给出条件化操作策略。 | `a-share-stock-analysis` -> `stock-analysis` plus `references/five-factor-stock-selection.md`, then `recommendation` |
+| five-factor-holdings-review | 这是我的持仓表，请按价值因子、质量因子、基本盘、资金动向、成长政策和风险逐只分析，再给出持有、减仓、退出或触发加仓条件。 | `a-share-stock-analysis` -> `portfolio-review` plus `references/five-factor-stock-selection.md`, then `recommendation` |
+
+## Strategy Loop Trigger Evals
+
+| Eval ID | Prompt | Expected Route |
+|---|---|---|
+| stock-loop-latest-screenshots | 下载并分析今日截图，按最新截图识别持仓，形成市场分析、策略、三年回测、参数优化和报告。 | `stock-strategy-loop` -> scan screenshots, require/validate `positions.json`, then run loop |
+| stock-loop-existing-positions | 用已有 `.stock-loop/positions/positions.json` 直接跑一次闭环，不自动下单，输出 daily_signal、backtest_result 和 Markdown 报告。 | `stock-strategy-loop` -> validate positions, run market/data/backtest/optimization |
+| stock-loop-method-audit | 检查我的股票 skills 如何自动形成“分析市场 -> 生成策略 -> 模拟验证 -> 根据结果自我迭代优化”的闭环。 | `stock-strategy-loop` -> explain loop contracts, backtest assumptions, and optimization guardrails |
+
 Passing behavior:
 
 - The agent reads the selected `SKILL.md` first.
 - The agent does not skip data validation when evidence is missing or file quality is unknown.
 - The agent separates facts, inference, uncertainty, and suggestions.
 - The agent gives invalidation conditions and risk controls with any trading suggestion.
+- The agent loads the five-factor reference when the prompt mentions value factors, quality factors, financial health, 1-month capital flow, volume ratio, turnover, order imbalance, policy support, or risk avoidance.
+- The agent routes screenshot-based holding loops, strict 3-year backtests, and bounded self-iteration requests to `stock-strategy-loop`.
 - The agent treats no-license third-party sources as conceptual input only and does not copy their text or code.

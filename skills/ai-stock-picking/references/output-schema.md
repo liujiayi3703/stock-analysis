@@ -24,13 +24,33 @@ Use these sections for a complete AI stock-picking output.
 - ticker
 - company name
 - industry-chain link
+- value-factor verdict when five-factor review is used
+- quality-factor verdict when five-factor review is used
 - growth evidence
 - margin evidence
 - bargaining-power evidence
+- fundamental-base verdict when five-factor review is used
+- 1-month capital-behavior verdict when five-factor review is used
+- growth/policy verdict when five-factor review is used
 - valuation note
 - technical note
 - red flags
 - next validation
+
+## Five-Factor Review
+
+- ticker
+- company name
+- value-factor verdict
+- quality-factor verdict
+- fundamental-base verdict
+- 1-month capital-behavior verdict
+- growth/policy verdict
+- risk penalty or top risks
+- total score or qualitative rank
+- action framing
+- invalidation condition
+- next data check
 
 ## Final Shortlist
 

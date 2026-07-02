@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "a-share-stock-analysis",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "entrypoint": "SKILL.md",
   "generated_for": "generic-agents",
   "workflows": [
@@ -17,6 +17,7 @@
   "references": [
     "references/a-share-domain.md",
     "references/data-sources.md",
+    "references/five-factor-stock-selection.md",
     "references/output-schemas.md",
     "references/risk-policy.md",
     "references/trading-signal-schema.md",

@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "name": "stock-strategy-loop",
+  "version": "0.1.0",
+  "entrypoint": "SKILL.md",
+  "generated_for": "generic-agents",
+  "references": [
+    "references/positions-schema.md",
+    "references/loop-contracts.md"
+  ],
+  "scripts": [
+    "scripts/run_loop.py"
+  ],
+  "examples": [
+    "examples/positions.sample.json"
+  ],
+  "evals": [
+    "evals/evals.json"
+  ]
+}

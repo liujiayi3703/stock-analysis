@@ -1,5 +1,12 @@
 # Stock Report
 
+## Five-Factor Review
+
+Use this section when value/quality, basic financial base, main funds, growth/policy, or risk avoidance is part of the request.
+
+| Stock | Value factor | Quality factor | Fundamental base | 1-month funds/trading | Growth/policy | Key risks | Action | Trigger | Invalidation |
+|---|---|---|---|---|---|---|---|---|---|
+
 ## 数据覆盖
 
 - 股票：

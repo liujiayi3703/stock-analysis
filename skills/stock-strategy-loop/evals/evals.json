@@ -1,0 +1,24 @@
+{
+  "skill_name": "stock-strategy-loop",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "我刚把今天的股票持仓截图放到 E:\\生活中的资料\\学习资料\\投资理财\\stock 里了，请跑完整的盘后闭环：识别最新截图、生成持仓策略、做近3年回测并给出报告。",
+      "expected_output": "Scans screenshots, requires or creates positions.json via vision, validates holdings, runs the loop, and returns report paths with key actions.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "用已有 .stock-loop/positions/positions.json 直接跑一次闭环，不要自动下单，重点看哪些持仓需要减仓和哪些只是观察。",
+      "expected_output": "Validates the positions JSON, runs data fetch/backtest/optimization, and writes daily_signal.json plus report.md.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "我想检查这个闭环有没有未来函数和过拟合风险，请说明回测成交假设、参数晋级条件和本次优化有没有更新参数。",
+      "expected_output": "Explains next-open execution, no-lookahead scoring, bounded walk-forward optimization, promotion guardrails, and reports whether params changed.",
+      "files": []
+    }
+  ]
+}
+
