@@ -47,9 +47,12 @@ Required top-level fields:
 - `market_news`
 - `errors`
 
+For compatibility with earlier generated reports, the runner may also include `*_count` aliases such as `holding_count`, `quote_count`, `history_count`, `market_news_count`, and `data_error_count`. Prefer the shorter canonical fields above when writing new consumers.
+
 `market_news_context` summarizes broad weekend/current-market news collected from the market-news feed:
 
 - `count`
+- `item_count` as a compatibility alias for `count`
 - `top_topics[]` with `topic`, `hits`, and sample titles
 - `latest[]` with the most recent visible news titles
 

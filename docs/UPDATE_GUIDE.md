@@ -23,6 +23,7 @@ python skills/a-share-stock-analysis/scripts/validate_market_dataset.py --help
 python skills/a-share-stock-analysis/scripts/validate_trade_signals.py --help
 python -m compileall skills/a-share-stock-analysis/scripts
 python -m py_compile skills/stock-strategy-loop/scripts/run_loop.py
+python -m unittest discover skills/stock-strategy-loop/tests
 python skills/stock-strategy-loop/scripts/run_loop.py validate-positions --positions-json skills/stock-strategy-loop/examples/positions.sample.json
 ```
 

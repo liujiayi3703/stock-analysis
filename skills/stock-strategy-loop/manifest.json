@@ -11,6 +11,9 @@
   "scripts": [
     "scripts/run_loop.py"
   ],
+  "tests": [
+    "tests/test_run_loop.py"
+  ],
   "examples": [
     "examples/positions.sample.json"
   ],

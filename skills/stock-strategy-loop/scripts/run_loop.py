@@ -69,6 +69,14 @@ DANGINVEST_SUMMARY_URL = "https://dang-invest.com/api/market/boards/summary"
 DANGINVEST_DETAIL_URL = "https://dang-invest.com/api/market/boards/detail"
 DANGINVEST_NEWS_URL = "https://dang-invest.com/api/market/news"
 
+K_CODE = "\u4ee3\u7801"
+K_NAME = "\u540d\u79f0"
+K_PRICE = "\u6700\u65b0\u4ef7"
+K_CHANGE_PCT = "\u6da8\u8dcc\u5e45(%)"
+K_PREV_CLOSE = "\u6628\u6536"
+K_MAIN_AMOUNT = "\u4e3b\u529b\u51c0\u989d"
+K_INDUSTRY = "\u884c\u4e1a"
+K_DATA_SOURCE = "\u6570\u636e\u6e90"
 K_DATE = "\u65e5\u671f"
 K_CLOSE = "\u6536\u76d8\u4ef7"
 K_PCT_CHG = "\u6da8\u8dcc\u5e45"
@@ -191,7 +199,7 @@ def loop_paths(workspace: Path, loop_dir: str = DEFAULT_LOOP_DIR) -> Dict[str, P
 
 
 def read_json(path: Path) -> Any:
-    with path.open("r", encoding="utf-8") as f:
+    with path.open("r", encoding="utf-8-sig") as f:
         return json.load(f)
 
 
@@ -274,6 +282,9 @@ def validate_positions(data: Dict[str, Any]) -> Tuple[bool, List[str], Dict[str,
 
 
 def run_subprocess_json(command: Sequence[str], timeout: int = 30) -> Tuple[Optional[Any], Optional[str]]:
+    env = os.environ.copy()
+    env["PYTHONIOENCODING"] = "utf-8"
+    env.setdefault("PYTHONUTF8", "1")
     try:
         proc = subprocess.run(
             list(command),
@@ -281,6 +292,7 @@ def run_subprocess_json(command: Sequence[str], timeout: int = 30) -> Tuple[Opti
             text=True,
             encoding="utf-8",
             errors="replace",
+            env=env,
             timeout=timeout,
         )
     except subprocess.TimeoutExpired:
@@ -342,7 +354,7 @@ def fetch_quotes(codes: List[str], a_share_skill: Path) -> Tuple[Dict[str, Dict[
             continue
         rows = data if isinstance(data, list) else data.get("data", []) if isinstance(data, dict) else []
         for row in rows:
-            code = normalize_code(row.get("代码") or row.get("code"))
+            code = normalize_code(first_present(row, [K_CODE, "code"]))
             if code:
                 quotes[code] = row
     return quotes, errors
@@ -378,20 +390,20 @@ def fetch_quotes_direct(codes: List[str]) -> Tuple[Dict[str, Dict[str, Any]], Op
         code = normalize_code(row.get("f12"))
         if code:
             quotes[code] = {
-                "代码": code,
-                "名称": row.get("f14"),
-                "最新价": row.get("f2"),
-                "涨跌幅(%)": row.get("f3"),
+                K_CODE: code,
+                K_NAME: row.get("f14"),
+                K_PRICE: row.get("f2"),
+                K_CHANGE_PCT: row.get("f3"),
                 "今开": row.get("f17"),
                 "最高": row.get("f15"),
                 "最低": row.get("f16"),
-                "昨收": row.get("f18"),
+                K_PREV_CLOSE: row.get("f18"),
                 "成交量": row.get("f5"),
                 "成交额": row.get("f6"),
                 "换手率(%)": row.get("f8"),
-                "主力净额": row.get("f62"),
-                "行业": row.get("f100"),
-                "数据源": "eastmoney-direct",
+                K_MAIN_AMOUNT: row.get("f62"),
+                K_INDUSTRY: row.get("f100"),
+                K_DATA_SOURCE: "eastmoney-direct",
             }
     return quotes, None
 
@@ -559,9 +571,9 @@ def normalize_history_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             "high": safe_float(row.get("high") or row.get("最高")),
             "low": safe_float(row.get("low") or row.get("最低")),
             "close": safe_float(row.get("close") or row.get("收盘")),
-            "preclose": safe_float(row.get("preclose") or row.get("昨收")),
+            "preclose": safe_float(row.get("preclose") or row.get(K_PREV_CLOSE)),
             "volume": safe_float(row.get("volume") or row.get("成交量")),
-            "pctChg": safe_float(row.get("pctChg") or row.get("涨跌幅")),
+            "pctChg": safe_float(row.get("pctChg") or row.get(K_PCT_CHG)),
         }
         if all(item[k] > 0 for k in ("open", "high", "low", "close")):
             out.append(item)
@@ -622,7 +634,13 @@ def fetch_fund_flow(code: str, a_share_skill: Path) -> Tuple[List[Dict[str, Any]
             return fallback, None
         return [], fallback_err or err
     rows = data if isinstance(data, list) else data.get("data", []) if isinstance(data, dict) else []
-    return normalize_fund_flow_rows(rows), None
+    normalized = normalize_fund_flow_rows(rows)
+    if normalized:
+        return normalized, None
+    fallback, fallback_err = fetch_fund_flow_direct(code)
+    if fallback:
+        return fallback, None
+    return [], fallback_err or "empty fund flow"
 
 
 def fetch_fund_flow_direct(code: str) -> Tuple[List[Dict[str, Any]], Optional[str]]:
@@ -1088,6 +1106,7 @@ def summarize_market_news(market_news: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "source": (market_news.get("meta") or {}).get("data_source") if isinstance(market_news, dict) else None,
         "updated_at": (market_news.get("meta") or {}).get("update_time") if isinstance(market_news, dict) else None,
+        "count": len(items),
         "item_count": len(items),
         "top_topics": top_topics[:8],
         "latest": items[:8],
@@ -1105,24 +1124,41 @@ def build_data_coverage(
     holdings = positions.get("holdings", [])
     total = len(holdings)
     histories = [len((stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).history) for h in holdings]
+    quote_count = sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).quote)
+    history_count = sum(1 for count in histories if count > 0)
+    fund_flow_count = sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).fund_flow)
+    event_count = sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).events)
+    industry_count = sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).industry)
+    market_news_count = len(market_news_items(market_news, limit=200))
+    data_error_count = len(data_errors)
     return {
+        "holdings": total,
         "holding_count": total,
-        "quote_count": sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).quote),
-        "history_count": sum(1 for count in histories if count > 0),
+        "quotes": quote_count,
+        "quote_count": quote_count,
+        "history": history_count,
+        "history_count": history_count,
         "history_rows_min": min(histories) if histories else 0,
         "history_rows_max": max(histories) if histories else 0,
-        "fund_flow_count": sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).fund_flow),
-        "event_count": sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).events),
-        "industry_count": sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).industry),
+        "fund_flow": fund_flow_count,
+        "fund_flow_count": fund_flow_count,
+        "events": event_count,
+        "event_count": event_count,
+        "industry": industry_count,
+        "industry_count": industry_count,
+        "board_summaries": len(board_summaries),
         "board_modes": sorted(board_summaries.keys()),
+        "indices": len(indices),
         "index_count": len(indices),
-        "market_news_count": len(market_news_items(market_news, limit=200)),
-        "data_error_count": len(data_errors),
+        "market_news": market_news_count,
+        "market_news_count": market_news_count,
+        "errors": data_error_count,
+        "data_error_count": data_error_count,
     }
 
 
 def classify_market(indices: List[Dict[str, Any]], board_summaries: Dict[str, Any]) -> Dict[str, Any]:
-    pct_values = [safe_float(x.get("涨跌幅(%)") or x.get("pct")) for x in indices]
+    pct_values = [safe_float(x.get(K_CHANGE_PCT) or x.get("pct")) for x in indices]
     avg_index = statistics.mean(pct_values) if pct_values else 0.0
     top_boards: List[Dict[str, Any]] = []
     for key, payload in board_summaries.items():
@@ -1286,7 +1322,7 @@ def generate_daily_signal(
             "name": holding["name"],
             "industry": data.industry,
             "current_weight": round(current_weight, 4),
-            "price": safe_float(data.quote.get("最新价") or data.quote.get("f2") or latest.get("close")),
+            "price": safe_float(data.quote.get(K_PRICE) or data.quote.get("f2") or latest.get("close")),
             "scores": score,
             "latest_indicators": {
                 "close": latest.get("close"),
@@ -1585,6 +1621,12 @@ def write_report(
     coverage = signal.get("data_coverage", {})
     news_context = signal.get("market_news_context", {})
     news_topics = ", ".join(f"{x['topic']}({x['hits']})" for x in news_context.get("top_topics", [])[:6]) or "n/a"
+    holding_count = coverage.get("holdings", coverage.get("holding_count", 0))
+    quote_count = coverage.get("quotes", coverage.get("quote_count", 0))
+    history_count = coverage.get("history", coverage.get("history_count", 0))
+    fund_flow_count = coverage.get("fund_flow", coverage.get("fund_flow_count", 0))
+    event_count = coverage.get("events", coverage.get("event_count", 0))
+    market_news_count = coverage.get("market_news", coverage.get("market_news_count", 0))
     lines = [
         f"# 股票策略闭环报告 - {dt.date.today().isoformat()}",
         "",
@@ -1599,11 +1641,11 @@ def write_report(
     ]
     lines.extend(
         [
-            f"- Data coverage: quotes {coverage.get('quotes', 0)}/{coverage.get('holdings', 0)}, "
-            f"history {coverage.get('history', 0)}/{coverage.get('holdings', 0)}, "
-            f"fund_flow {coverage.get('fund_flow', 0)}/{coverage.get('holdings', 0)}, "
-            f"events {coverage.get('events', 0)}/{coverage.get('holdings', 0)}, "
-            f"market_news {coverage.get('market_news', 0)}",
+            f"- Data coverage: quotes {quote_count}/{holding_count}, "
+            f"history {history_count}/{holding_count}, "
+            f"fund_flow {fund_flow_count}/{holding_count}, "
+            f"events {event_count}/{holding_count}, "
+            f"market_news {market_news_count}",
             f"- Market-news topics: {news_topics}",
         ]
     )
@@ -1689,14 +1731,14 @@ def collect_data(
             errors.append(f"sector_board_fallback: {board_sector_err}")
     for code, quote in quotes.items():
         if code not in sectors or not sectors.get(code, {}).get("industry"):
-            industry = quote.get("行业") or quote.get("f100")
-            name = quote.get("名称") or quote.get("f14")
+            industry = quote.get(K_INDUSTRY) or quote.get("f100")
+            name = quote.get(K_NAME) or quote.get("f14")
             if industry or name:
                 sectors[code] = {
                     "code": code,
                     "name": name,
                     "industry": industry or "",
-                    "source": quote.get("数据源", "quote-fallback"),
+                    "source": quote.get(K_DATA_SOURCE, "quote-fallback"),
                     "error": None,
                 }
     board_summaries, board_errors = fetch_board_summaries(a_share_skill)

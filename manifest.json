@@ -42,7 +42,8 @@
         "evals",
         "examples",
         "references",
-        "scripts"
+        "scripts",
+        "tests"
       ]
     },
     {
@@ -120,6 +121,7 @@
     "skills/stock-strategy-loop/manifest.json",
     "skills/stock-strategy-loop/references/positions-schema.md",
     "skills/stock-strategy-loop/references/loop-contracts.md",
+    "skills/stock-strategy-loop/tests/test_run_loop.py",
     "skills/serenity-alpha/SKILL.md",
     "skills/bayesian-intrinsic-growth-valuation/SKILL.md",
     "skills/gf-dma-health-index/SKILL.md",
