@@ -22,12 +22,15 @@ python skills/a-share-stock-analysis/scripts/validate_holdings_csv.py --help
 python skills/a-share-stock-analysis/scripts/validate_market_dataset.py --help
 python skills/a-share-stock-analysis/scripts/validate_trade_signals.py --help
 python -m compileall skills/a-share-stock-analysis/scripts
+python -m py_compile skills/stock-strategy-loop/scripts/run_loop.py
+python skills/stock-strategy-loop/scripts/run_loop.py validate-positions --positions-json skills/stock-strategy-loop/examples/positions.sample.json
 ```
 
 Validate each skill folder with Codex's skill validator:
 
 ```powershell
 python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\a-share-stock-analysis
+python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\stock-strategy-loop
 python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\ai-stock-picking
 python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\serenity-alpha
 python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\bayesian-intrinsic-growth-valuation
@@ -49,6 +52,15 @@ C:\Users\liuji\Desktop\科研Skills\
 ```
 
 Use the path that exists on the current machine.
+
+## Data-Source Contract
+
+When updating `skills/stock-strategy-loop/scripts/run_loop.py`, keep the loop resilient to partial data:
+
+- quote/history failures must lower confidence rather than fabricate prices
+- fund-flow collection should normalize source-specific Chinese field names into stable internal keys
+- event/news collection may degrade gracefully, but the report must expose the degradation in `data_coverage.errors`
+- new output fields must be documented in `skills/stock-strategy-loop/references/loop-contracts.md`
 
 ## Versioning
 

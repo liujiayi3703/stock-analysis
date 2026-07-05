@@ -37,7 +37,7 @@
       "name": "stock-strategy-loop",
       "entrypoint": "skills/stock-strategy-loop/SKILL.md",
       "path": "skills/stock-strategy-loop",
-      "description": "Use when turning latest A-share portfolio screenshots or positions JSON into a manual strategy loop: extract holdings, validate positions, analyze market regime, generate holding actions, run 3-year strict backtests, optimize bounded parameters, and write Markdown plus JSON outputs without auto-ordering.",
+      "description": "Use when turning latest A-share portfolio screenshots or positions JSON into a manual strategy loop: extract holdings, validate positions, collect market/news/fund-flow data, score data coverage, generate holding actions, run 3-year strict backtests, optimize bounded parameters, and write Markdown plus JSON outputs without auto-ordering.",
       "resource_dirs": [
         "evals",
         "examples",
@@ -108,6 +108,7 @@
   ],
   "recommended_generic_agent_files": [
     "manifest.json",
+    "docs/A_SHARE_SYSTEM_EVOLUTION.md",
     "docs/CONNECTING_AGENTS.md",
     "docs/TRIGGER_EVALS.md",
     "docs/THIRD_PARTY_SOURCES.md",

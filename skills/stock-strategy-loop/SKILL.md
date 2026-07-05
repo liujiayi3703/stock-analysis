@@ -1,6 +1,6 @@
 ---
 name: stock-strategy-loop
-description: A股持仓策略闭环编排技能。Use whenever the user wants to turn stock screenshots or current A-share holdings into an automated loop: read latest portfolio screenshots, analyze market regime, generate holding actions, run 3-year strict backtests, optimize bounded strategy parameters/weights, and write Markdown + JSON outputs. Trigger for “股票闭环”, “自动分析市场生成策略模拟验证自我迭代”, “根据截图跑策略”, “盘后研究闭环”, “持仓回测优化”, or similar requests.
+description: "A-share holding strategy loop: turn portfolio screenshots or positions JSON into market/news collection, holding actions, strict backtests, bounded optimization, and Markdown plus JSON outputs without auto-ordering."
 ---
 
 # Stock Strategy Loop
@@ -24,6 +24,8 @@ Read `references/positions-schema.md` before creating or editing `positions.json
 ## Existing Skills To Reuse
 
 - Use `a-share-data` scripts for A-share market data, history, indicators, fund flow, sectors, events, and board heat.
+- Use market-news collection for weekend/current-market context before interpreting next-week holding actions.
+- Treat `data_coverage` and `data_confidence` as first-class risk controls; downgrade actions when quotes, history, fund flow, or events are missing.
 - Use `macd-trend-resonance-stock-picker`, `macd-second-golden-cross`, and `tuige-shortline-trading` as rule lenses when explaining the strategy result.
 - Do not edit those skills as part of this loop. This skill is the orchestrator.
 
@@ -88,6 +90,13 @@ Outputs are written to:
 - `.stock-loop/backtests/backtest_result_YYYY-MM-DD.json`
 - `.stock-loop/backtests/optimization_YYYY-MM-DD.json`
 - `.stock-loop/params/strategy_params.json`
+
+The runner now records:
+
+- per-run data coverage for quotes, history, fund flow, events, board summaries, indices, and market news
+- 5-day main-fund-flow net value in each stock score's raw evidence
+- broad market-news topic hits so weekend news can be considered alongside technical and fund-flow signals
+- degraded event-fetch fallback when sentiment/event enrichment is slow or unavailable
 
 ## Strategy Contract
 

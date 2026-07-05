@@ -22,6 +22,7 @@ import sys
 import time
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
@@ -63,6 +64,24 @@ DEFAULT_PARAMS: Dict[str, Any] = {
     "roundtrip_cost_bps": 45,
     "rebalance_cost_bps": 22.5,
 }
+
+DANGINVEST_SUMMARY_URL = "https://dang-invest.com/api/market/boards/summary"
+DANGINVEST_DETAIL_URL = "https://dang-invest.com/api/market/boards/detail"
+DANGINVEST_NEWS_URL = "https://dang-invest.com/api/market/news"
+
+K_DATE = "\u65e5\u671f"
+K_CLOSE = "\u6536\u76d8\u4ef7"
+K_PCT_CHG = "\u6da8\u8dcc\u5e45"
+K_MAIN_NET = "\u4e3b\u529b\u51c0\u6d41\u5165-\u51c0\u989d"
+K_MAIN_RATIO = "\u4e3b\u529b\u51c0\u6d41\u5165-\u51c0\u5360\u6bd4"
+K_SUPER_NET = "\u8d85\u5927\u5355\u51c0\u6d41\u5165-\u51c0\u989d"
+K_BIG_NET = "\u5927\u5355\u51c0\u6d41\u5165-\u51c0\u989d"
+K_TITLE = "\u65b0\u95fb\u6807\u9898"
+K_CONTENT = "\u65b0\u95fb\u5185\u5bb9"
+K_PUBLISHED_AT = "\u53d1\u5e03\u65f6\u95f4"
+K_SOURCE = "\u6587\u7ae0\u6765\u6e90"
+K_NET_PROFIT_YOY = "\u51c0\u5229\u6da6-\u540c\u6bd4\u589e\u957f"
+K_PERF_CHANGE_PCT = "\u4e1a\u7ee9\u53d8\u52a8\u5e45\u5ea6"
 
 
 @dataclass
@@ -400,6 +419,103 @@ def fetch_sector_info(codes: List[str], a_share_skill: Path) -> Tuple[Dict[str, 
     return sectors, note
 
 
+def fetch_danginvest_industry_fallback(codes: List[str]) -> Tuple[Dict[str, Dict[str, Any]], Optional[str]]:
+    """Map stock codes to DangInvest major industry boards when Eastmoney sector data is unavailable."""
+    wanted = {normalize_code(code) for code in codes if normalize_code(code)}
+    if not wanted:
+        return {}, None
+
+    errors: List[str] = []
+
+    def get_json(url: str, params: Dict[str, Any]) -> Dict[str, Any]:
+        last_exc: Optional[Exception] = None
+        for trust_env in (False, True):
+            session = requests.Session()
+            session.trust_env = trust_env
+            session.headers.update({"User-Agent": "Mozilla/5.0", "Referer": "https://dang-invest.com/"})
+            try:
+                response = session.get(url, params=params, timeout=20)
+                response.raise_for_status()
+                return response.json()
+            except Exception as exc:
+                last_exc = exc
+        raise RuntimeError(str(last_exc))
+
+    try:
+        summary = get_json(
+            DANGINVEST_SUMMARY_URL,
+            {"mode": "industry", "limit": "300", "sort": "market_cap_desc"},
+        )
+    except Exception as exc:
+        return {}, f"danginvest industry summary failed: {exc}"
+
+    summary_data = summary.get("data", []) if isinstance(summary, dict) else []
+    rows = summary_data.get("items", []) if isinstance(summary_data, dict) else summary_data
+    def scan_board(board: Dict[str, Any]) -> Tuple[Dict[str, Dict[str, Any]], List[str]]:
+        board_found: Dict[str, Dict[str, Any]] = {}
+        board_errors: List[str] = []
+        group_key = board.get("groupKey")
+        group_label = board.get("groupLabel") or group_key
+        if not group_key:
+            return board_found, board_errors
+
+        offset = 0
+        while True:
+            try:
+                detail = get_json(
+                    DANGINVEST_DETAIL_URL,
+                    {
+                        "mode": "industry",
+                        "groupKey": group_key,
+                        "sort": "market_cap_desc",
+                        "items_limit": "300",
+                        "items_offset": str(offset),
+                    },
+                )
+            except Exception as exc:
+                board_errors.append(f"{group_key}: {exc}")
+                break
+
+            data = detail.get("data", {}) if isinstance(detail, dict) else {}
+            items = data.get("items", []) if isinstance(data, dict) else []
+            for item in items:
+                code = normalize_code(item.get("code"))
+                if code in wanted and code not in board_found:
+                    board_found[code] = {
+                        "code": code,
+                        "name": item.get("name"),
+                        "industry": str(group_label or ""),
+                        "source": "danginvest-industry-fallback",
+                        "error": None,
+                    }
+
+            meta = data.get("itemsMeta", {}) if isinstance(data, dict) else {}
+            if not meta.get("hasMore"):
+                break
+            next_offset = meta.get("nextOffset")
+            if next_offset is None:
+                break
+            offset = int(next_offset)
+
+        return board_found, board_errors
+
+    found: Dict[str, Dict[str, Any]] = {}
+    with ThreadPoolExecutor(max_workers=min(8, max(1, len(rows)))) as executor:
+        futures = [executor.submit(scan_board, board) for board in rows if isinstance(board, dict)]
+        for future in as_completed(futures):
+            board_found, board_errors = future.result()
+            for code, row in board_found.items():
+                found.setdefault(code, row)
+            errors.extend(board_errors)
+            if not (wanted - set(found)):
+                break
+
+    missing = sorted(wanted - set(found))
+    if missing:
+        errors.append(f"danginvest industry missing: {','.join(missing)}")
+    return found, "; ".join(errors) if errors else None
+
+
 def fetch_history(
     code: str, start: str, end: str, a_share_skill: Path, retries: int = 2
 ) -> Tuple[List[Dict[str, Any]], Optional[str]]:
@@ -453,6 +569,48 @@ def normalize_history_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return out
 
 
+def first_present(row: Dict[str, Any], keys: Sequence[str]) -> Any:
+    for key in keys:
+        if key in row and row.get(key) not in (None, "", "-", "--"):
+            return row.get(key)
+    return None
+
+
+def normalize_date(value: Any) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, (int, float)):
+        timestamp = float(value)
+        if timestamp > 10_000_000_000:
+            try:
+                return dt.datetime.fromtimestamp(timestamp / 1000).date().isoformat()
+            except (OSError, ValueError):
+                return str(value)
+    return str(value).strip()[:10]
+
+
+def normalize_fund_flow_rows(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    normalized: List[Dict[str, Any]] = []
+    for row in rows or []:
+        if not isinstance(row, dict):
+            continue
+        date = normalize_date(first_present(row, ("date", K_DATE, "trade_date")))
+        item = {
+            "date": date,
+            "main_net_wan": safe_float(first_present(row, ("main_net_wan", K_MAIN_NET))),
+            "main_ratio_pct": safe_float(first_present(row, ("main_ratio_pct", K_MAIN_RATIO, "main_ratio"))),
+            "super_net_wan": safe_float(first_present(row, ("super_net_wan", K_SUPER_NET))),
+            "big_net_wan": safe_float(first_present(row, ("big_net_wan", K_BIG_NET))),
+            "close": safe_float(first_present(row, ("close", K_CLOSE))),
+            "pct_chg": safe_float(first_present(row, ("pct_chg", K_PCT_CHG))),
+            "source": row.get("source") or row.get("data_source") or row.get("鏁版嵁婧?") or "unknown",
+        }
+        if date or item["main_net_wan"] or item["main_ratio_pct"]:
+            normalized.append(item)
+    normalized.sort(key=lambda x: x.get("date") or "")
+    return normalized
+
+
 def fetch_fund_flow(code: str, a_share_skill: Path) -> Tuple[List[Dict[str, Any]], Optional[str]]:
     script = a_share_skill / "scripts" / "fetch_realtime.py"
     data, err = run_subprocess_json(
@@ -464,7 +622,7 @@ def fetch_fund_flow(code: str, a_share_skill: Path) -> Tuple[List[Dict[str, Any]
             return fallback, None
         return [], fallback_err or err
     rows = data if isinstance(data, list) else data.get("data", []) if isinstance(data, dict) else []
-    return rows, None
+    return normalize_fund_flow_rows(rows), None
 
 
 def fetch_fund_flow_direct(code: str) -> Tuple[List[Dict[str, Any]], Optional[str]]:
@@ -488,6 +646,26 @@ def fetch_fund_flow_direct(code: str) -> Tuple[List[Dict[str, Any]], Optional[st
         payload = response.json()
     except Exception as exc:
         return [], str(exc)
+    direct_rows = []
+    for line in payload.get("data", {}).get("klines", []) or []:
+        parts = line.split(",")
+        if len(parts) < 13:
+            continue
+        direct_rows.append(
+            {
+                "date": parts[0],
+                "main_net_wan": safe_float(parts[1]) / 10000,
+                "small_net_wan": safe_float(parts[2]) / 10000,
+                "medium_net_wan": safe_float(parts[3]) / 10000,
+                "big_net_wan": safe_float(parts[4]) / 10000,
+                "super_net_wan": safe_float(parts[5]) / 10000,
+                "main_ratio_pct": safe_float(parts[6]),
+                "close": safe_float(parts[11]),
+                "pct_chg": safe_float(parts[12]),
+                "source": "eastmoney-direct",
+            }
+        )
+    return normalize_fund_flow_rows(direct_rows), None
     rows = []
     for line in payload.get("data", {}).get("klines", []) or []:
         parts = line.split(",")
@@ -513,10 +691,43 @@ def fetch_fund_flow_direct(code: str) -> Tuple[List[Dict[str, Any]], Optional[st
 def fetch_events(code: str, name: str, a_share_skill: Path) -> Tuple[Dict[str, Any], Optional[str]]:
     script = a_share_skill / "scripts" / "fetch_stock_events.py"
     data, err = run_subprocess_json(
-        [sys.executable, str(script), "--code", code, "--name", name, "--limit", "12", "--json"], timeout=35
+        [
+            sys.executable,
+            str(script),
+            "--code",
+            code,
+            "--name",
+            name,
+            "--limit",
+            "12",
+            "--max-seconds",
+            "35",
+            "--json",
+        ],
+        timeout=40,
     )
     if err:
-        return {}, err
+        fallback, fallback_err = run_subprocess_json(
+            [
+                sys.executable,
+                str(script),
+                "--code",
+                code,
+                "--name",
+                name,
+                "--limit",
+                "12",
+                "--max-seconds",
+                "25",
+                "--skip-sentiment",
+                "--json",
+            ],
+            timeout=30,
+        )
+        if isinstance(fallback, dict):
+            fallback["_degraded"] = "sentiment skipped after full event fetch failed"
+            return fallback, f"full event fetch failed; used degraded retry: {err}"
+        return {}, fallback_err or err
     return data if isinstance(data, dict) else {}, None
 
 
@@ -534,6 +745,42 @@ def fetch_board_summaries(a_share_skill: Path) -> Tuple[Dict[str, Any], List[str
         else:
             result[mode] = data
     return result, errors
+
+
+def fetch_market_news(a_share_skill: Path, limit: int = 80) -> Tuple[Dict[str, Any], Optional[str]]:
+    script = a_share_skill / "scripts" / "fetch_danginvest.py"
+    data, err = run_subprocess_json(
+        [sys.executable, str(script), "--news", "--limit", str(limit), "--json"],
+        timeout=40,
+    )
+    if not err and isinstance(data, dict):
+        return data, None
+
+    try:
+        session = requests.Session()
+        session.trust_env = False
+        response = session.get(
+            DANGINVEST_NEWS_URL,
+            params={"limit": limit, "offset": 0},
+            headers={"User-Agent": "Mozilla/5.0", "Referer": "https://dang-invest.com/"},
+            timeout=20,
+        )
+        response.raise_for_status()
+        payload = response.json()
+        return {
+            "meta": {
+                "url": DANGINVEST_NEWS_URL,
+                "limit": limit,
+                "offset": 0,
+                "count": payload.get("count"),
+                "has_more": payload.get("has_more"),
+                "update_time": now_str(),
+                "data_source": "DangInvest direct",
+            },
+            "data": payload.get("data") or [],
+        }, err
+    except Exception as exc:
+        return {}, f"{err}; direct news fallback failed: {exc}" if err else str(exc)
 
 
 def ema(values: List[float], period: int) -> List[Optional[float]]:
@@ -630,6 +877,33 @@ def score_from_row(
     flow = 50.0
     if fund_flow:
         latest = fund_flow[-1]
+        main_ratio = safe_float(latest.get("main_ratio_pct") or latest.get("main_ratio"))
+        recent = fund_flow[-5:]
+        recent_net = sum(safe_float(x.get("main_net_wan")) for x in recent)
+        positive_days = sum(1 for x in recent if safe_float(x.get("main_net_wan")) > 0)
+        if main_ratio > 5:
+            flow += 15
+        elif main_ratio > 0:
+            flow += 6
+        elif main_ratio < -5:
+            flow -= 15
+        elif main_ratio < 0:
+            flow -= 6
+        if recent_net > 3000:
+            flow += 14
+        elif recent_net > 0:
+            flow += 7
+        elif recent_net < -3000:
+            flow -= 14
+        elif recent_net < 0:
+            flow -= 7
+        if positive_days >= 4:
+            flow += 6
+        elif positive_days <= 1:
+            flow -= 6
+        fund_flow = []
+    if fund_flow:
+        latest = fund_flow[-1]
         main_ratio = safe_float(
             latest.get("主力占比(%)")
             or latest.get("main_ratio")
@@ -666,9 +940,79 @@ def score_from_row(
     }
 
 
+def text_from_event_item(item: Dict[str, Any]) -> str:
+    values = [
+        first_present(item, (K_TITLE, "title", "headline")),
+        first_present(item, (K_CONTENT, "content", "summary")),
+        first_present(item, (K_SOURCE, "source")),
+    ]
+    return " ".join(str(x) for x in values if x)
+
+
+def event_texts(events: Dict[str, Any]) -> List[str]:
+    texts: List[str] = []
+    for section_name in ("holder_change_buyback", "regulatory", "major_contracts", "sentiment"):
+        section = events.get(section_name, {})
+        for item in section.get("items") or []:
+            if isinstance(item, dict):
+                text = text_from_event_item(item)
+                if text:
+                    texts.append(text)
+    return texts
+
+
+def structured_event_bias(events: Dict[str, Any]) -> float:
+    bias = 0.0
+    performance = events.get("performance", {})
+    for item in (performance.get("forecast") or []) + (performance.get("express") or []):
+        if not isinstance(item, dict):
+            continue
+        pct = safe_float(first_present(item, (K_NET_PROFIT_YOY, K_PERF_CHANGE_PCT)))
+        if pct > 80:
+            bias += 22
+        elif pct > 30:
+            bias += 14
+        elif pct > 0:
+            bias += 7
+        elif pct < -50:
+            bias -= 22
+        elif pct < -20:
+            bias -= 12
+
+    text = "\n".join(event_texts(events))
+    positive_keywords = [
+        "\u9884\u589e",
+        "\u589e\u957f",
+        "\u91cf\u4ef7\u9f50\u5347",
+        "\u83b7\u5f97\u836f\u54c1\u6ce8\u518c\u8bc1\u4e66",
+        "\u673a\u6784\u8c03\u7814",
+        "\u8ba2\u5355",
+        "\u56de\u8d2d",
+        "\u89e3\u9664\u8d28\u62bc",
+    ]
+    negative_keywords = [
+        "\u51cf\u6301",
+        "\u5f02\u52a8",
+        "\u98ce\u9669\u63d0\u793a",
+        "\u95ee\u8be2",
+        "\u5904\u7f5a",
+        "\u4e8f\u635f",
+        "\u65e0\u8d44\u4ea7\u6ce8\u5165",
+        "\u672a\u83b7\u5f97\u4efb\u4f55\u8ba2\u5355",
+        "\u8e6d\u70ed\u70b9",
+        "\u7acb\u6848",
+    ]
+    bias += min(18, 6 * sum(1 for keyword in positive_keywords if keyword in text))
+    bias -= min(24, 8 * sum(1 for keyword in negative_keywords if keyword in text))
+    if events.get("_degraded"):
+        bias -= 3
+    return max(-35.0, min(35.0, bias))
+
+
 def event_bias(events: Dict[str, Any]) -> float:
     if not events:
         return 0.0
+    return structured_event_bias(events)
     perf = events.get("performance", {})
     forecasts = perf.get("forecast") or []
     if forecasts:
@@ -699,6 +1043,82 @@ def board_change_for_industry(industry: str, board_summaries: Dict[str, Any]) ->
             if industry in label or label in industry:
                 best = max(best, safe_float(row.get("changePct")))
     return best
+
+
+def market_news_items(market_news: Dict[str, Any], limit: int = 20) -> List[Dict[str, Any]]:
+    rows = market_news.get("data", []) if isinstance(market_news, dict) else []
+    items: List[Dict[str, Any]] = []
+    for row in rows[:limit]:
+        if not isinstance(row, dict):
+            continue
+        items.append(
+            {
+                "published_at": row.get("published_at") or row.get(K_PUBLISHED_AT),
+                "source": row.get("source") or row.get(K_SOURCE),
+                "title": row.get("title") or row.get(K_TITLE) or "",
+                "content": row.get("content") or row.get(K_CONTENT) or "",
+                "url": row.get("url"),
+            }
+        )
+    return items
+
+
+def summarize_market_news(market_news: Dict[str, Any]) -> Dict[str, Any]:
+    items = market_news_items(market_news, limit=80)
+    topic_keywords = {
+        "AI/compute": ["AI", "\u7b97\u529b", "\u534a\u5bfc\u4f53", "MLCC", "PCB", "\u5149\u6a21\u5757", "\u79d1\u6280"],
+        "robotics": ["\u673a\u5668\u4eba", "\u5177\u8eab\u667a\u80fd", "\u4eba\u5f62\u673a\u5668\u4eba"],
+        "commercial_space": ["\u5546\u4e1a\u822a\u5929", "\u536b\u661f", "\u957f\u5f81", "\u822a\u5929"],
+        "autos": ["\u6c7d\u8f66", "\u70ed\u7ba1\u7406", "\u96f6\u90e8\u4ef6", "\u534e\u4e3a\u6c7d\u8f66"],
+        "chemicals_materials": ["\u5316\u5de5", "\u65b0\u6750\u6599", "\u6c1f", "PEEK", "\u6da8\u4ef7"],
+        "medicine": ["\u533b\u836f", "\u836f\u54c1", "\u533b\u7597\u5668\u68b0", "\u6ce8\u518c\u8bc1"],
+        "macro_risk": ["CPI", "PPI", "\u91d1\u878d\u6570\u636e", "\u53f0\u98ce", "\u970d\u5c14\u6728\u5179", "\u539f\u6cb9"],
+    }
+    counts = {topic: 0 for topic in topic_keywords}
+    for item in items:
+        text = f"{item.get('title', '')} {item.get('content', '')}"
+        for topic, keywords in topic_keywords.items():
+            if any(keyword in text for keyword in keywords):
+                counts[topic] += 1
+    top_topics = [
+        {"topic": topic, "hits": hits}
+        for topic, hits in sorted(counts.items(), key=lambda x: x[1], reverse=True)
+        if hits > 0
+    ]
+    return {
+        "source": (market_news.get("meta") or {}).get("data_source") if isinstance(market_news, dict) else None,
+        "updated_at": (market_news.get("meta") or {}).get("update_time") if isinstance(market_news, dict) else None,
+        "item_count": len(items),
+        "top_topics": top_topics[:8],
+        "latest": items[:8],
+    }
+
+
+def build_data_coverage(
+    positions: Dict[str, Any],
+    stock_data: Dict[str, StockData],
+    board_summaries: Dict[str, Any],
+    indices: List[Dict[str, Any]],
+    market_news: Dict[str, Any],
+    data_errors: Sequence[str],
+) -> Dict[str, Any]:
+    holdings = positions.get("holdings", [])
+    total = len(holdings)
+    histories = [len((stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).history) for h in holdings]
+    return {
+        "holding_count": total,
+        "quote_count": sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).quote),
+        "history_count": sum(1 for count in histories if count > 0),
+        "history_rows_min": min(histories) if histories else 0,
+        "history_rows_max": max(histories) if histories else 0,
+        "fund_flow_count": sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).fund_flow),
+        "event_count": sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).events),
+        "industry_count": sum(1 for h in holdings if (stock_data.get(h["code"]) or StockData(h["code"], h.get("name", ""), [], {})).industry),
+        "board_modes": sorted(board_summaries.keys()),
+        "index_count": len(indices),
+        "market_news_count": len(market_news_items(market_news, limit=200)),
+        "data_error_count": len(data_errors),
+    }
 
 
 def classify_market(indices: List[Dict[str, Any]], board_summaries: Dict[str, Any]) -> Dict[str, Any]:
@@ -732,7 +1152,12 @@ def classify_market(indices: List[Dict[str, Any]], board_summaries: Dict[str, An
 
 
 def action_for_holding(
-    holding: Dict[str, Any], score: Dict[str, Any], latest_row: Dict[str, Any], params: Dict[str, Any], total_assets: float
+    holding: Dict[str, Any],
+    score: Dict[str, Any],
+    latest_row: Dict[str, Any],
+    params: Dict[str, Any],
+    total_assets: float,
+    missing_data: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     pnl_pct = 0.0
     cost = safe_float(holding.get("cost_price"))
@@ -759,6 +1184,12 @@ def action_for_holding(
         action = "hold"
         target_weight = min(params["max_single_weight"], safe_float(holding.get("market_value")) / total_assets if total_assets else 0)
         reason = "结构未破坏，维持观察"
+
+    missing_data = missing_data or []
+    if action == "add_only_if_triggered" and "fund_flow" in missing_data:
+        action = "hold"
+        target_weight = min(params["max_single_weight"], safe_float(holding.get("market_value")) / total_assets if total_assets else 0)
+        reason = "资金流数据缺失，禁止加仓信号升级，仅保留持有观察"
 
     trigger = f"放量站稳短均线 {round(ma_short, 2) if ma_short else '缺失'} 且总评分不低于 {params['entry_score']}"
     invalidation = f"跌破长均线 {round(ma_long, 2) if ma_long else '缺失'} 或总评分低于 {params['reduce_score']}"
@@ -793,6 +1224,9 @@ def generate_daily_signal(
     stock_data: Dict[str, StockData],
     market_regime: Dict[str, Any],
     board_summaries: Dict[str, Any],
+    indices: List[Dict[str, Any]],
+    market_news: Dict[str, Any],
+    data_errors: Sequence[str],
     params: Dict[str, Any],
 ) -> Dict[str, Any]:
     stock_scores: List[Dict[str, Any]] = []
@@ -842,6 +1276,7 @@ def generate_daily_signal(
         score["raw"] = {
             "history_rows": len(data.history),
             "fund_flow_rows": len(data.fund_flow or []),
+            "fund_flow_5d_net_wan": round(sum(safe_float(x.get("main_net_wan")) for x in (data.fund_flow or [])[-5:]), 2),
             "sector_change_pct": round(sector_change, 4),
             "event_bias": round(bias, 4),
         }
@@ -867,12 +1302,14 @@ def generate_daily_signal(
             "missing_data": missing_data,
         }
         stock_scores.append(score_row)
-        actions.append(action_for_holding(holding, score, latest, params, total_assets))
+        actions.append(action_for_holding(holding, score, latest, params, total_assets, missing_data))
 
     return {
         "generated_at": now_str(),
         "snapshot_time": positions.get("snapshot_time"),
+        "data_coverage": build_data_coverage(positions, stock_data, board_summaries, indices, market_news, data_errors),
         "market_regime": market_regime,
+        "market_news_context": summarize_market_news(market_news),
         "sector_context": {
             "matched_note": "sector scores use current industry labels matched to market board summaries when available",
             "board_source": "DangInvest via a-share-data fetch_danginvest.py",
@@ -1145,6 +1582,9 @@ def write_report(
     data_errors: List[str],
 ) -> None:
     metrics = backtest.get("metrics", {})
+    coverage = signal.get("data_coverage", {})
+    news_context = signal.get("market_news_context", {})
+    news_topics = ", ".join(f"{x['topic']}({x['hits']})" for x in news_context.get("top_topics", [])[:6]) or "n/a"
     lines = [
         f"# 股票策略闭环报告 - {dt.date.today().isoformat()}",
         "",
@@ -1157,6 +1597,16 @@ def write_report(
         "",
         "## 组合动作",
     ]
+    lines.extend(
+        [
+            f"- Data coverage: quotes {coverage.get('quotes', 0)}/{coverage.get('holdings', 0)}, "
+            f"history {coverage.get('history', 0)}/{coverage.get('holdings', 0)}, "
+            f"fund_flow {coverage.get('fund_flow', 0)}/{coverage.get('holdings', 0)}, "
+            f"events {coverage.get('events', 0)}/{coverage.get('holdings', 0)}, "
+            f"market_news {coverage.get('market_news', 0)}",
+            f"- Market-news topics: {news_topics}",
+        ]
+    )
     for action in signal.get("portfolio_actions", []):
         lines.append(
             f"- {action['code']} {action['name']}: {action['action']} | 目标权重 {action['target_weight']:.2%} | {action['reason']}"
@@ -1223,7 +1673,7 @@ def collect_data(
     start: str,
     end: str,
     include_events: bool,
-) -> Tuple[Dict[str, StockData], Dict[str, Any], List[Dict[str, Any]], List[str]]:
+) -> Tuple[Dict[str, StockData], Dict[str, Any], List[Dict[str, Any]], Dict[str, Any], List[str]]:
     codes = [h["code"] for h in positions["holdings"]]
     errors: List[str] = []
     quotes, quote_errors = fetch_quotes(codes, a_share_skill)
@@ -1231,6 +1681,12 @@ def collect_data(
     sectors, sector_err = fetch_sector_info(codes, a_share_skill)
     if sector_err:
         errors.append(f"sector: {sector_err}")
+    missing_sector_codes = [code for code in codes if not sectors.get(code, {}).get("industry")]
+    if missing_sector_codes:
+        board_sectors, board_sector_err = fetch_danginvest_industry_fallback(missing_sector_codes)
+        sectors.update({code: row for code, row in board_sectors.items() if row.get("industry")})
+        if board_sector_err:
+            errors.append(f"sector_board_fallback: {board_sector_err}")
     for code, quote in quotes.items():
         if code not in sectors or not sectors.get(code, {}).get("industry"):
             industry = quote.get("行业") or quote.get("f100")
@@ -1245,6 +1701,9 @@ def collect_data(
                 }
     board_summaries, board_errors = fetch_board_summaries(a_share_skill)
     errors.extend(board_errors)
+    market_news, news_err = fetch_market_news(a_share_skill)
+    if news_err:
+        errors.append(f"market_news: {news_err}")
     indices, index_err = fetch_indices(a_share_skill)
     if index_err:
         errors.append(f"indices: {index_err}")
@@ -1273,7 +1732,7 @@ def collect_data(
             fund_flow=fund_flow,
             events=events,
         )
-    return stock_data, board_summaries, indices, errors
+    return stock_data, board_summaries, indices, market_news, errors
 
 
 def run_loop(args: argparse.Namespace) -> int:
@@ -1310,12 +1769,12 @@ def run_loop(args: argparse.Namespace) -> int:
     run_dir = paths["runs"] / run_date
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    stock_data, board_summaries, indices, data_errors = collect_data(
+    stock_data, board_summaries, indices, market_news, data_errors = collect_data(
         positions, Path(args.a_share_skill), start_date, end_date, include_events=args.include_events
     )
     histories = {code: data.history for code, data in stock_data.items() if data.history}
     market = classify_market(indices, board_summaries)
-    signal = generate_daily_signal(positions, stock_data, market, board_summaries, params)
+    signal = generate_daily_signal(positions, stock_data, market, board_summaries, indices, market_news, data_errors, params)
     backtest = run_backtest(histories, params, start_date=start_date, end_date=end_date)
     optimization = optimize_params(histories, params)
     selected_params = optimization.get("selected_params", params)

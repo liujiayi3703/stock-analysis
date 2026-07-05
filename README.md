@@ -24,6 +24,12 @@ Holding strategy loop router:
 skills/stock-strategy-loop/SKILL.md
 ```
 
+Operational guide for the evolved A-share holding-analysis loop:
+
+```text
+docs/A_SHARE_SYSTEM_EVOLUTION.md
+```
+
 Serenity framework skills:
 
 ```text
@@ -57,7 +63,7 @@ This skill library helps agents:
 - validate data quality before analysis
 - produce market-level and stock-level analysis
 - review user-provided holdings
-- turn latest portfolio screenshots into a manual one-command loop: positions extraction, market analysis, strategy signal, 3-year backtest, bounded parameter optimization, Markdown report, and JSON outputs
+- turn latest portfolio screenshots into a manual one-command loop: positions extraction, market/news collection, data-coverage scoring, strategy signal, 3-year backtest, bounded parameter optimization, Markdown report, and JSON outputs
 - map industry chains and identify profit pools
 - run three-lens decision reviews across macro, industry-chain, and execution timing
 - screen high-growth, high-margin, high-bargaining-power companies

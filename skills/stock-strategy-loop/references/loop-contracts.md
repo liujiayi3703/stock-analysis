@@ -25,12 +25,33 @@ Required top-level fields:
 {
   "generated_at": "2026-07-03 21:00:00",
   "snapshot_time": "2026-07-03 20:58:00",
+  "data_coverage": {},
   "market_regime": {},
+  "market_news_context": {},
   "sector_context": {},
   "stock_scores": [],
   "portfolio_actions": []
 }
 ```
+
+`data_coverage` summarizes whether the current run had enough source data to support its conclusions:
+
+- `holdings`
+- `quotes`
+- `history`
+- `fund_flow`
+- `events`
+- `industry`
+- `board_summaries`
+- `indices`
+- `market_news`
+- `errors`
+
+`market_news_context` summarizes broad weekend/current-market news collected from the market-news feed:
+
+- `count`
+- `top_topics[]` with `topic`, `hits`, and sample titles
+- `latest[]` with the most recent visible news titles
 
 Each `stock_scores[]` item should include:
 
@@ -45,6 +66,7 @@ Each `stock_scores[]` item should include:
 - `scores.sector_score`
 - `scores.event_score`
 - `scores.raw`
+- `scores.raw.fund_flow_5d_net_wan`
 - `data_confidence`
 
 Each `portfolio_actions[]` item must include:
@@ -131,4 +153,3 @@ A candidate may be promoted only when:
 - maximum single-trade loss is not materially worse
 
 If a candidate fails any guardrail, keep the previous `strategy_params.json` and explain the rejection in the report.
-
