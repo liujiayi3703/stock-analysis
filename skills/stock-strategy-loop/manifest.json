@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "stock-strategy-loop",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "entrypoint": "SKILL.md",
   "generated_for": "generic-agents",
   "references": [
@@ -9,10 +9,18 @@
     "references/loop-contracts.md"
   ],
   "scripts": [
-    "scripts/run_loop.py"
+    "scripts/run_loop.py",
+    "scripts/market_context.py",
+    "scripts/reporting.py"
   ],
   "tests": [
-    "tests/test_run_loop.py"
+    "tests/test_run_loop.py",
+    "tests/test_market_context.py",
+    "tests/test_reporting.py"
+  ],
+  "python_requires": ">=3.9",
+  "python_dependencies": [
+    "requests>=2.31,<3"
   ],
   "examples": [
     "examples/positions.sample.json"

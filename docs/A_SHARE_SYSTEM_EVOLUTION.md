@@ -43,7 +43,7 @@
 ```powershell
 python .\skills\stock-strategy-loop\scripts\run_loop.py --workspace "<workspace>" scan-screenshots
 python .\skills\stock-strategy-loop\scripts\run_loop.py validate-positions --positions-json "<workspace>\.stock-loop\positions\positions.json"
-python .\skills\stock-strategy-loop\scripts\run_loop.py --workspace "<workspace>" run --include-events --a-share-skill "C:\Users\liuji\.codex\skills\a-share-data"
+python .\skills\stock-strategy-loop\scripts\run_loop.py --workspace "<workspace>" run --include-events --a-share-skill "<path-to-a-share-data-skill>"
 ```
 
 输出位置：
@@ -76,4 +76,3 @@ python .\skills\stock-strategy-loop\scripts\run_loop.py --workspace "<workspace>
 - 截图抽取仍依赖人工或视觉模型复核，缺字段时不得编造。
 - 周末消息只能作为催化和风险背景，不能替代价格、资金和公告验证。
 - 数据接口可能间歇失败，必须看 `data_coverage.errors` 后再决定仓位动作。
-

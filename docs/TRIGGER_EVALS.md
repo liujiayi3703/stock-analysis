@@ -48,3 +48,17 @@ Passing behavior:
 - The agent loads the five-factor reference when the prompt mentions value factors, quality factors, financial health, 1-month capital flow, volume ratio, turnover, order imbalance, policy support, or risk avoidance.
 - The agent routes screenshot-based holding loops, strict 3-year backtests, and bounded self-iteration requests to `stock-strategy-loop`.
 - The agent treats no-license third-party sources as conceptual input only and does not copy their text or code.
+
+## Router Smoke Evals
+
+Run from the repository root:
+
+```powershell
+$env:PYTHONUTF8=1
+python scripts/skill_router.py "请根据最新截图对目前持仓复盘，并跑三年回测和参数优化" --json
+python scripts/skill_router.py "用巴菲特和段永平框架看这只美股的估值和建仓" --json
+python scripts/skill_router.py "MCP API key 鉴权报401，帮我配置 Claude Code" --json
+python scripts/skill_router.py "群里老师说这票必涨，帮我看看是不是杀猪盘" --json
+```
+
+Expected primary routes: `stock-strategy-loop`, `openclaw-stock-analyzer`, `mcp-api-key-auth`, and `uzi-trap-detector`.

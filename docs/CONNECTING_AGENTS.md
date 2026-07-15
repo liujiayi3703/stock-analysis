@@ -5,9 +5,12 @@ Use this repository as a skill library for AI stock-picking agents, A-share anal
 ## Fast Path
 
 1. Read `manifest.json`.
-2. Choose the matching skill entrypoint.
-3. Read that skill's `SKILL.md` completely.
-4. Load only the workflow and reference files required by the user's current request.
+2. If the request is fuzzy, run `python scripts/skill_router.py "<user request>" --json`.
+3. Choose the matching skill entrypoint, or follow the router's `load_order`.
+4. Read each selected skill's `SKILL.md` completely.
+5. Load only the workflow and reference files required by the user's current request.
+
+If `choice_required` is true, ask the user to pick the focus unless they explicitly requested broad analysis.
 
 ## Skill Router
 
@@ -20,6 +23,8 @@ Use this repository as a skill library for AI stock-picking agents, A-share anal
 | GF-DMA trend/valuation health, DMA divergence, escape risk, estimate revisions | `skills/gf-dma-health-index/SKILL.md` |
 | TAM-adjusted PEG, growth runway, quality-adjusted growth valuation | `skills/tam-adj-peg/SKILL.md` |
 | Full buy-side equity research memo, target-price scenarios, catalysts, risks, monitoring dashboard | `skills/buy-side-equity-research-memo/SKILL.md` |
+
+For skills not shown in the short table, treat `manifest.json` as authoritative. It covers every top-level folder under `skills/`.
 
 ## Five-Factor Routing Notes
 
@@ -60,6 +65,7 @@ If the app cannot scan folders, paste or upload:
 
 ```text
 manifest.json
+AGENTS.md
 skills/<selected-skill>/SKILL.md
 ```
 
@@ -68,6 +74,8 @@ Then let the agent read referenced workflow or reference files on demand.
 ## Expected Agent Behavior
 
 Agents should not load the full repository by default. Start from the manifest, select one skill, then read the smallest needed set of files.
+
+For broad prompts such as "分析我的持仓", "帮我看这只股票", "学习这个股票工具", or "配置数据源", use `scripts/skill_router.py` to return both primary and companion skills.
 
 Common AI stock-picking stages:
 

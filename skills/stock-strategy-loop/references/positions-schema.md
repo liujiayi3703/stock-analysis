@@ -6,13 +6,13 @@
 
 ```json
 {
-  "snapshot_time": "2026-07-01 21:15:40",
-  "source_screenshots": ["absolute image path"],
+  "snapshot_time": "2026-01-02 15:00:00",
+  "source_screenshots": ["screenshots/demo_positions_2026-01-02-15-00-00.png"],
   "accounts": [],
   "holdings": [],
-  "cash": 139564.84,
-  "stock_value": 604068.0,
-  "total_assets": 743632.84
+  "cash": 400.0,
+  "stock_value": 1600.0,
+  "total_assets": 2000.0
 }
 ```
 
@@ -20,14 +20,14 @@
 
 ```json
 {
-  "account": "account_1",
-  "code": "605020",
-  "name": "永和股份",
-  "shares": 1900,
-  "cost_price": 39.796,
-  "last_price": 43.99,
-  "market_value": 83581,
-  "unrealized_pnl": 7968.39
+  "account": "demo_account",
+  "code": "000101",
+  "name": "示例科技",
+  "shares": 100,
+  "cost_price": 8.0,
+  "last_price": 10.0,
+  "market_value": 1000.0,
+  "unrealized_pnl": 200.0
 }
 ```
 
@@ -36,8 +36,13 @@
 - Use screenshot filename time as `snapshot_time`.
 - Preserve one row per visible holding.
 - Use numbers exactly as shown in the screenshot.
-- If market value is not visible but shares and last price are visible, calculate it and mark `market_value_derived: true`.
-- If a required field is unreadable, stop and report the missing field instead of guessing.
+- `shares`, `cost_price`, `last_price`, `market_value`, and `unrealized_pnl` must be finite JSON numbers decoded as built-in integers or floats; booleans, numeric strings such as `"100"`, arrays, objects, `NaN`, and infinities are invalid. Shares, last price, and market value must be positive; cost price must be non-negative.
+- If market value is not visible but valid positive shares and last price are visible, omit `market_value`, calculate it, and mark the exact boolean `market_value_derived: true`. The marker does not repair a present malformed market value, and string/numeric lookalikes do not authorize derivation.
+- If a required holding field is unreadable, stop and report the missing field instead of guessing.
+- If cash or total assets are unreadable, set the corresponding exact boolean marker `cash_unreadable: true` or `total_assets_lower_bound: true`; non-boolean lookalikes do not activate incomplete-asset mode.
+- `stock_value` must otherwise be a finite positive JSON number, `cash` a finite non-negative JSON number, and `total_assets` a finite positive JSON number under the same no-boolean/no-string rule. The validator does not replace malformed or missing top-level values with holding sums.
+- Exact `cash_unreadable: true` normalizes cash to zero for deterministic arithmetic while keeping exposure unknown. Exact `total_assets_lower_bound: true` normalizes total assets to validated stock value as a visible lower bound.
+- For target research from such an incomplete account, the runner derives `visible_account_stock_value` from all finite positive visible holding market values and preserves it as the concentration denominator.
 - Validate that `sum(holding.market_value)` is close to top-level `stock_value`.
 - Validate that `stock_value + cash` is close to `total_assets`.
 
@@ -47,4 +52,3 @@
 - Costs and prices are yuan per share.
 - `unrealized_pnl` is yuan, not percent.
 - Percent fields can be added, but the runner does not require them.
-

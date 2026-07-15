@@ -91,6 +91,7 @@ Every market, stock, or portfolio report should include:
 
 - data coverage
 - core conclusion
+- industry panorama cognition for individual stocks or material holdings
 - five-factor evidence summary when the request includes value/quality, financial health, fund-flow, growth/policy, or risk-avoidance analysis
 - evidence
 - contrary evidence
@@ -134,3 +135,21 @@ Allowed actions:
 - `add_only_if_triggered`
 - `reduce`
 - `exit`
+
+## Industry Panorama Cognition
+
+Use this schema for individual-company analysis and material holdings. Load `references/industry-panorama-template.md` for the detailed checklist.
+
+Required:
+
+- `ticker`
+- `name`
+- `known_industry_label`
+- `segment`
+- `value_chain_position`
+- `upstream_dependencies`
+- `downstream_customers`
+- `industry_influence`
+- `scarce_capability_or_moat`
+- `analogy`
+- `unknowns_to_verify`

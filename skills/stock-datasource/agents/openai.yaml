@@ -1,0 +1,7 @@
+interface:
+  display_name: "Stock Datasource"
+  short_description: "stock_datasource 数据源能力总入口"
+  default_prompt: "Use $stock-datasource to route stock data queries, realtime subscriptions, and Tushare plugin work to the installed stock_datasource skills."
+
+policy:
+  allow_implicit_invocation: true

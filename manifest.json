@@ -1,131 +1,336 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "name": "stock-analysis",
-  "description": "Reusable stock-analysis skill library for AI stock picking, five-factor value/quality stock review, A-share workflows, trade-signal validation, macro-event digestion, and Serenity equity research frameworks.",
+  "description": "Reusable stock-analysis skill library for AI stock picking, A-share workflows, holding strategy loops, market data access, monitoring, OpenClaw knowledge, UZI research workflows, and Serenity equity research frameworks.",
   "generated_for": "generic-agents",
   "default_entrypoint": "skills/ai-stock-picking/SKILL.md",
+  "routing_policy": {
+    "router_script": "scripts/skill_router.py",
+    "validation_script": "scripts/validate_skills.py",
+    "agent_loading_order": [
+      "manifest.json",
+      "scripts/skill_router.py",
+      "selected SKILL.md files",
+      "selected workflow/reference files"
+    ],
+    "when_many_matches": "If four or more primary skills match, or the top two scores are close, ask the user to choose focus. For broad research requests, load the returned load_order from top to bottom."
+  },
   "skills": [
-    {
-      "id": "ai-stock-picking",
-      "name": "ai-stock-picking",
-      "entrypoint": "skills/ai-stock-picking/SKILL.md",
-      "path": "skills/ai-stock-picking",
-      "description": "Use when running a sector-first AI stock-picking workflow: find sectors, map industry chains, screen companies with value/quality factors, validate fundamentals and technicals, run three-lens decisions, digest macro events, and produce risk-aware shortlists or research reports.",
-      "resource_dirs": [
-        "agents",
-        "references",
-        "templates",
-        "workflows"
-      ]
-    },
     {
       "id": "a-share-stock-analysis",
       "name": "a-share-stock-analysis",
       "entrypoint": "skills/a-share-stock-analysis/SKILL.md",
       "path": "skills/a-share-stock-analysis",
-      "description": "Use when analyzing A-share market data, hotspots, individual stocks, user holdings, five-factor value/quality/fund-flow/policy/risk reviews, trade-signal files, market risk, or evidence-based trade decision support.",
-      "resource_dirs": [
-        "agents",
-        "references",
-        "scripts",
-        "templates",
-        "workflows"
-      ]
+      "description": "Analyze A-share market data, hotspots, individual stocks, holdings, five-factor value/quality/fund-flow/policy/risk reviews, trade-signal files, and evidence-based trading suggestions.",
+      "aliases": ["A股分析", "沪深A股", "个股分析", "持仓分析", "股票持仓", "下周操作", "行情数据", "交易建议", "portfolio review", "trade signal"],
+      "keywords": ["A-share", "China stock market", "hotspots", "market regime", "holding", "portfolio", "价值因子", "质量因子", "财务健康", "主力资金", "量比", "换手率", "委比", "政策支持", "风险边界"],
+      "companion_skills": ["industry-panorama-cognition", "stock-strategy-loop", "stock-datasource", "uzi-investor-panel", "uzi-trap-detector"],
+      "resource_dirs": ["agents", "references", "scripts", "templates", "workflows"]
     },
     {
-      "id": "stock-strategy-loop",
-      "name": "stock-strategy-loop",
-      "entrypoint": "skills/stock-strategy-loop/SKILL.md",
-      "path": "skills/stock-strategy-loop",
-      "description": "Use when turning latest A-share portfolio screenshots or positions JSON into a manual strategy loop: extract holdings, validate positions, collect market/news/fund-flow data, score data coverage, generate holding actions, run 3-year strict backtests, optimize bounded parameters, and write Markdown plus JSON outputs without auto-ordering.",
-      "resource_dirs": [
-        "evals",
-        "examples",
-        "references",
-        "scripts",
-        "tests"
-      ]
-    },
-    {
-      "id": "serenity-alpha",
-      "name": "serenity-alpha",
-      "entrypoint": "skills/serenity-alpha/SKILL.md",
-      "path": "skills/serenity-alpha",
-      "description": "Use when translating market news, product launches, demand changes, supply-chain clues, or technology breakthroughs into investable alpha hypotheses and validation paths.",
-      "source_repository": "haskaomni/serenity-skill",
-      "resource_dirs": [
-        "agents",
-        "references"
-      ]
+      "id": "ai-stock-picking",
+      "name": "ai-stock-picking",
+      "entrypoint": "skills/ai-stock-picking/SKILL.md",
+      "path": "skills/ai-stock-picking",
+      "description": "Run sector-first AI stock-picking workflows: find sectors, map industry chains, screen companies, validate fundamentals and technicals, digest macro events, and produce risk-aware shortlists.",
+      "aliases": ["AI选股", "选股", "找赛道", "股票池", "三高公司", "shortlist", "sector-first"],
+      "keywords": ["stock picking", "sector scan", "industry chain", "company screening", "high growth", "high margin", "moat", "价值因子", "质量因子", "五步法", "宏观事件", "候选股"],
+      "companion_skills": ["a-share-stock-analysis", "industry-panorama-cognition", "serenity-alpha", "buy-side-equity-research-memo", "bayesian-intrinsic-growth-valuation", "tam-adj-peg", "gf-dma-health-index"],
+      "resource_dirs": ["agents", "references", "templates", "workflows"]
     },
     {
       "id": "bayesian-intrinsic-growth-valuation",
       "name": "bayesian-intrinsic-growth-valuation",
       "entrypoint": "skills/bayesian-intrinsic-growth-valuation/SKILL.md",
       "path": "skills/bayesian-intrinsic-growth-valuation",
-      "description": "Use when evaluating a company's intrinsic 3-5 year growth with Bayesian hypothesis updates, market-implied growth, valuation, FOMO, fundamentals, TAM, and industry-cycle evidence.",
+      "description": "Evaluate a company's intrinsic 3-5 year growth with Bayesian hypothesis updates, market-implied growth, valuation, FOMO, fundamentals, TAM, and industry-cycle evidence.",
+      "aliases": ["贝叶斯估值", "内生成长估值", "implied growth", "FOMO vs fundamentals"],
+      "keywords": ["Bayesian", "intrinsic growth", "market-implied growth", "3-5 year growth", "valuation", "fundamentals", "TAM", "margin", "probability update"],
+      "companion_skills": ["tam-adj-peg", "buy-side-equity-research-memo", "gf-dma-health-index"],
       "source_repository": "haskaomni/serenity-skill",
-      "resource_dirs": [
-        "agents",
-        "references"
-      ]
-    },
-    {
-      "id": "gf-dma-health-index",
-      "name": "gf-dma-health-index",
-      "entrypoint": "skills/gf-dma-health-index/SKILL.md",
-      "path": "skills/gf-dma-health-index",
-      "description": "Use when scoring whether a stock's valuation and trend health are supported by fundamental growth, DMA structure, divergence, escape ratio, and estimate revisions.",
-      "source_repository": "haskaomni/serenity-skill",
-      "resource_dirs": [
-        "agents",
-        "references"
-      ]
-    },
-    {
-      "id": "tam-adj-peg",
-      "name": "tam-adj-peg",
-      "entrypoint": "skills/tam-adj-peg/SKILL.md",
-      "path": "skills/tam-adj-peg",
-      "description": "Use when evaluating growth-stock valuation with TAM-adjusted PEG, growth runway, business quality, pricing power, cyclicality, dilution, and execution risk.",
-      "source_repository": "haskaomni/serenity-skill",
-      "resource_dirs": [
-        "agents",
-        "references"
-      ]
+      "resource_dirs": ["agents", "references"]
     },
     {
       "id": "buy-side-equity-research-memo",
       "name": "buy-side-equity-research-memo",
       "entrypoint": "skills/buy-side-equity-research-memo/SKILL.md",
       "path": "skills/buy-side-equity-research-memo",
-      "description": "Use when generating source-backed buy-side equity research memos, investment committee notes, target-price scenarios, SOTP analysis, catalysts, risks, and monitoring dashboards.",
+      "description": "Generate source-backed buy-side equity research memos, investment committee notes, target-price scenarios, SOTP analysis, catalysts, risks, and monitoring dashboards.",
+      "aliases": ["买方研报", "IC memo", "investment committee note", "深度研报", "目标价情景"],
+      "keywords": ["buy-side memo", "equity research", "target price", "bull base bear", "SOTP", "catalysts", "variant perception", "monitoring dashboard", "source-backed"],
+      "companion_skills": ["bayesian-intrinsic-growth-valuation", "tam-adj-peg", "gf-dma-health-index", "industry-panorama-cognition"],
       "source_repository": "haskaomni/serenity-skill",
-      "resource_dirs": [
-        "agents",
-        "references"
-      ]
+      "resource_dirs": ["agents", "references"]
+    },
+    {
+      "id": "gf-dma-health-index",
+      "name": "gf-dma-health-index",
+      "entrypoint": "skills/gf-dma-health-index/SKILL.md",
+      "path": "skills/gf-dma-health-index",
+      "description": "Score valuation and trend health with fundamental growth speed, 20/50/100/200DMA structure, divergence, escape ratio, and estimate revisions.",
+      "aliases": ["GF-DMA", "DMA健康度", "趋势健康", "逃逸风险", "均线健康"],
+      "keywords": ["DMA", "moving average", "20DMA", "50DMA", "100DMA", "200DMA", "trend health", "valuation health", "ATR divergence", "escape ratio", "estimate revisions"],
+      "companion_skills": ["a-share-stock-analysis", "bayesian-intrinsic-growth-valuation", "tam-adj-peg"],
+      "source_repository": "haskaomni/serenity-skill",
+      "resource_dirs": ["agents", "references"]
+    },
+    {
+      "id": "industry-panorama-cognition",
+      "name": "industry-panorama-cognition",
+      "entrypoint": "skills/industry-panorama-cognition/SKILL.md",
+      "path": "skills/industry-panorama-cognition",
+      "description": "Add industry panorama cognition to stock analysis: segment, value-chain position, upstream/downstream dependencies, barriers, moat, business model, and plain-language concept explanation.",
+      "aliases": ["行业全景", "产业链位置", "细分领域", "行业地图", "概念讲解", "护城河"],
+      "keywords": ["industry panorama", "value chain", "upstream", "midstream", "downstream", "barrier", "moat", "business model", "technology wall", "公司到底做什么"],
+      "companion_skills": ["a-share-stock-analysis", "ai-stock-picking", "buy-side-equity-research-memo"],
+      "resource_dirs": ["agents", "references"]
+    },
+    {
+      "id": "mcp-api-key-auth",
+      "name": "mcp-api-key-auth",
+      "entrypoint": "skills/mcp-api-key-auth/SKILL.md",
+      "path": "skills/mcp-api-key-auth",
+      "description": "Set up, manage, or troubleshoot MCP API key authentication and tool usage tracking for the stock data service and external clients.",
+      "aliases": ["MCP API Key", "API key 鉴权", "Claude Code MCP", "Cursor MCP", "401"],
+      "keywords": ["MCP", "API key", "authentication", "access token", "tool usage", "external MCP clients", "JWT", "expired key", "invalid key"],
+      "companion_skills": ["stock-datasource", "stock-mcp-query"],
+      "resource_dirs": []
+    },
+    {
+      "id": "openclaw-stock-analyzer",
+      "name": "openclaw-stock-analyzer",
+      "entrypoint": "skills/openclaw-stock-analyzer/SKILL.md",
+      "path": "skills/openclaw-stock-analyzer",
+      "description": "Run OpenClaw value-investing stock analysis with Buffett and Duan Yongping style qualitative review, valuation, position-building, earnings review, and defensive screening.",
+      "aliases": ["openclaw-stock-analyzer", "stock-analyzer", "巴菲特", "段永平", "价值投资", "建仓", "防御股"],
+      "keywords": ["OpenClaw", "value investing", "Buffett", "Duan Yongping", "valuation", "earnings review", "US stocks", "HK stocks", "position building", "options suggestion"],
+      "companion_skills": ["openclaw-stock-kb", "buy-side-equity-research-memo", "uzi-deep-analysis"],
+      "resource_dirs": []
+    },
+    {
+      "id": "openclaw-stock-kb",
+      "name": "openclaw-stock-kb",
+      "entrypoint": "skills/openclaw-stock-kb/SKILL.md",
+      "path": "skills/openclaw-stock-kb",
+      "description": "Reference layer for OpenClaw stock strategy knowledge: indicators, moving averages, MACD, RSI, Bollinger Bands, mean reversion, momentum, backtesting, position sizing, stop loss, and sentiment data.",
+      "aliases": ["OpenClaw知识库", "股票策略知识库", "技术指标", "均线", "MACD", "RSI", "布林带"],
+      "keywords": ["OpenClaw", "knowledge base", "technical indicators", "MA", "MACD", "RSI", "Bollinger", "mean reversion", "momentum", "backtrader", "position sizing", "stop loss"],
+      "companion_skills": ["stock-monitor-skill", "openclaw-stock-analyzer"],
+      "resource_dirs": ["agents", "references"]
+    },
+    {
+      "id": "serenity-alpha",
+      "name": "serenity-alpha",
+      "entrypoint": "skills/serenity-alpha/SKILL.md",
+      "path": "skills/serenity-alpha",
+      "description": "Translate market news, product launches, demand changes, supply-chain clues, and technology breakthroughs into investable alpha hypotheses and validation paths.",
+      "aliases": ["Serenity Alpha", "新闻转alpha", "小市值受益股", "产业新闻"],
+      "keywords": ["alpha hypothesis", "market news", "demand change", "supply chain", "small-cap beneficiary", "financial elasticity", "validation path", "news to financial statement"],
+      "companion_skills": ["ai-stock-picking", "buy-side-equity-research-memo", "industry-panorama-cognition"],
+      "source_repository": "haskaomni/serenity-skill",
+      "resource_dirs": ["agents", "references"]
+    },
+    {
+      "id": "stock-daily-analysis",
+      "name": "stock-daily-analysis",
+      "entrypoint": "skills/stock-daily-analysis/SKILL.md",
+      "path": "skills/stock-daily-analysis",
+      "description": "Run LLM-driven daily stock analysis for watchlists across A-shares, HK stocks, and US stocks, including technical analysis, trend judgment, buy-signal scoring, dashboard-style output, and market review.",
+      "aliases": ["每日股票分析", "每日复盘", "技术面分析", "自选股分析", "决策仪表盘"],
+      "keywords": ["daily analysis", "watchlist", "MA", "MACD", "RSI", "bias ratio", "trend", "buy signal", "market review", "A股", "港股", "美股"],
+      "companion_skills": ["stock-monitor-skill", "a-share-stock-analysis", "stock-datasource"],
+      "resource_dirs": ["scripts"]
+    },
+    {
+      "id": "stock-data-assistant",
+      "name": "stock-data-assistant",
+      "entrypoint": "skills/stock-data-assistant/SKILL.md",
+      "path": "skills/stock-data-assistant",
+      "description": "Unified stock data assistant for MCP historical data query, WebSocket realtime subscriptions, and WeChat/PicoClaw interaction with stock data services.",
+      "aliases": ["股票数据助手", "微信联动", "PicoClaw", "picoclaw", "实时行情订阅", "数据查询助手"],
+      "keywords": ["MCP data query", "WebSocket", "realtime data", "WeChat channel", "historical K-line", "financial statements", "ETF", "index", "stock data assistant"],
+      "companion_skills": ["stock-datasource", "stock-mcp-query", "stock-rt-subscribe"],
+      "resource_dirs": ["references"]
+    },
+    {
+      "id": "stock-datasource",
+      "name": "stock-datasource",
+      "entrypoint": "skills/stock-datasource/SKILL.md",
+      "path": "skills/stock-datasource",
+      "description": "Route stock_datasource tasks across MCP historical queries, realtime subscriptions, data assistant setup, Tushare plugin building, and MCP API key authentication.",
+      "aliases": ["stock_datasource", "股票数据源", "行情推送", "数据源总入口", "MCP股票查询"],
+      "keywords": ["stock datasource", "market data", "MCP query", "realtime subscription", "WebSocket", "Tushare plugin", "API key auth", "stock-mcp-query", "stock-rt-subscribe"],
+      "companion_skills": ["stock-mcp-query", "stock-rt-subscribe", "stock-data-assistant", "tushare-plugin-builder", "mcp-api-key-auth"],
+      "resource_dirs": ["agents", "references"]
+    },
+    {
+      "id": "stock-mcp-query",
+      "name": "stock-mcp-query",
+      "entrypoint": "skills/stock-mcp-query/SKILL.md",
+      "path": "skills/stock-mcp-query",
+      "description": "Query historical stock market data, K-line data, financial statements, market indicators, stock screening results, ETFs, and indices through MCP protocol.",
+      "aliases": ["MCP股票查询", "历史K线", "财务报表查询", "批量行情", "stock MCP query"],
+      "keywords": ["MCP", "historical data", "daily K-line", "financial statements", "market indicators", "stock screening", "ETF", "index", "database query"],
+      "companion_skills": ["stock-datasource", "mcp-api-key-auth"],
+      "resource_dirs": []
+    },
+    {
+      "id": "stock-monitor-skill",
+      "name": "stock-monitor-skill",
+      "entrypoint": "skills/stock-monitor-skill/SKILL.md",
+      "path": "skills/stock-monitor-skill",
+      "description": "Configure intelligent stock monitoring and alerts with cost percentage, intraday move, volume anomaly, MA cross, RSI, gap, dynamic take-profit, and China-market red-up/green-down conventions.",
+      "aliases": ["股票监控", "预警", "动态止盈", "成本百分比", "均线金叉死叉", "成交量异动"],
+      "keywords": ["stock monitor", "alert", "cost percentage", "intraday change", "volume anomaly", "MA cross", "RSI overbought oversold", "gap", "take profit"],
+      "companion_skills": ["stock-rt-subscribe", "openclaw-stock-kb", "stock-data-assistant"],
+      "resource_dirs": ["scripts"]
+    },
+    {
+      "id": "stock-rt-subscribe",
+      "name": "stock-rt-subscribe",
+      "entrypoint": "skills/stock-rt-subscribe/SKILL.md",
+      "path": "skills/stock-rt-subscribe",
+      "description": "Subscribe to realtime stock market data through WebSocket receiver nodes for live prices, realtime alerts, and minute-level K-line streams.",
+      "aliases": ["实时订阅", "实时行情", "WebSocket行情", "分钟K线", "实时预警"],
+      "keywords": ["WebSocket", "realtime stock data", "receiver node", "live price", "alert", "minute K-line", "A-share", "HK stock", "ETF"],
+      "companion_skills": ["stock-monitor-skill", "stock-data-assistant", "stock-datasource"],
+      "resource_dirs": ["references", "scripts"]
+    },
+    {
+      "id": "stock-strategy-loop",
+      "name": "stock-strategy-loop",
+      "entrypoint": "skills/stock-strategy-loop/SKILL.md",
+      "path": "skills/stock-strategy-loop",
+      "description": "Turn latest portfolio screenshots or positions JSON into a manual A-share holding strategy loop: extract holdings, validate positions, collect market/news/fund-flow data, score coverage, generate holding actions, run strict backtests, optimize bounded parameters, and output Markdown plus JSON without auto-ordering.",
+      "aliases": ["持仓闭环", "策略循环", "最新截图持仓", "三年回测", "参数优化", "daily_signal", "positions.json"],
+      "keywords": ["portfolio screenshots", "positions JSON", "holding strategy loop", "scan screenshots", "validate positions", "market analysis", "news collection", "fund flow", "3-year backtest", "bounded optimization", "self-iteration", "manual strategy"],
+      "companion_skills": ["a-share-stock-analysis", "industry-panorama-cognition", "stock-datasource", "uzi-investor-panel", "uzi-trap-detector"],
+      "resource_dirs": ["evals", "examples", "references", "scripts", "tests"]
+    },
+    {
+      "id": "tam-adj-peg",
+      "name": "tam-adj-peg",
+      "entrypoint": "skills/tam-adj-peg/SKILL.md",
+      "path": "skills/tam-adj-peg",
+      "description": "Evaluate growth-stock valuation using TAM-adjusted PEG, growth runway, business quality, pricing power, cyclicality, dilution, and execution risk.",
+      "aliases": ["TAM-Adj-PEG", "成长股估值", "PEG调整", "增长空间", "质量调整估值"],
+      "keywords": ["TAM", "PEG", "growth runway", "quality-adjusted growth", "pricing power", "cyclicality", "dilution", "execution risk", "growth stock valuation"],
+      "companion_skills": ["bayesian-intrinsic-growth-valuation", "gf-dma-health-index", "buy-side-equity-research-memo"],
+      "source_repository": "haskaomni/serenity-skill",
+      "resource_dirs": ["agents", "references"]
+    },
+    {
+      "id": "tushare-openclaw-skill",
+      "name": "tushare-openclaw-skill",
+      "entrypoint": "skills/tushare-openclaw-skill/SKILL.md",
+      "path": "skills/tushare-openclaw-skill",
+      "description": "Use Tushare Pro financial data APIs for Chinese stocks, funds, futures, bonds, market quotes, financial data, basic information, and macroeconomic data.",
+      "aliases": ["Tushare", "Tushare Pro", "tushare-api", "中国股票数据", "金融数据API"],
+      "keywords": ["Tushare Pro", "financial data API", "A-share", "fund", "futures", "bond", "quotes", "financial data", "basic info", "macroeconomic data"],
+      "companion_skills": ["tushare-plugin-builder", "stock-datasource", "stock-mcp-query"],
+      "resource_dirs": ["assets", "docs", "references", "scripts"]
+    },
+    {
+      "id": "tushare-plugin-builder",
+      "name": "tushare-plugin-builder",
+      "entrypoint": "skills/tushare-plugin-builder/SKILL.md",
+      "path": "skills/tushare-plugin-builder",
+      "description": "Generate or validate a full stock_datasource plugin from a Tushare API document URL, including extractor, schema, config, query service, MCP/HTTP usage, and testable curl examples.",
+      "aliases": ["Tushare插件", "插件构建", "生成插件", "API文档转插件", "validate plugin"],
+      "keywords": ["Tushare API document", "plugin builder", "extractor", "schema", "config", "query service", "MCP", "HTTP", "curl", "ClickHouse"],
+      "companion_skills": ["tushare-openclaw-skill", "stock-datasource"],
+      "resource_dirs": ["references", "scripts"]
+    },
+    {
+      "id": "uzi",
+      "name": "uzi",
+      "entrypoint": "skills/uzi/SKILL.md",
+      "path": "skills/uzi",
+      "description": "Top-level UZI stock research suite router for deep analysis, investor panels, LHB/hot-money analysis, trap detection, IC memo, and A-share/HK/US stock research.",
+      "aliases": ["UZI", "UZI-Skill", "UZI总入口", "UZI套件"],
+      "keywords": ["UZI", "deep analysis", "investor panel", "LHB", "youzi", "trap detection", "IC memo", "A-share", "HK stock", "US stock"],
+      "companion_skills": ["uzi-deep-analysis", "uzi-investor-panel", "uzi-lhb-analyzer", "uzi-trap-detector"],
+      "resource_dirs": ["agents", "commands", "docs", "hooks", "skills"]
+    },
+    {
+      "id": "uzi-deep-analysis",
+      "name": "uzi-deep-analysis",
+      "entrypoint": "skills/uzi-deep-analysis/SKILL.md",
+      "path": "skills/uzi-deep-analysis",
+      "description": "Run UZI deep stock analysis for full equity research, valuation, DCF, comps, catalysts, earnings review, IC memo, initiation report, HTML report, and A-share/HK/US stock analysis.",
+      "aliases": ["UZI深度分析", "深度分析", "DCF", "comps", "IC memo", "HTML研报"],
+      "keywords": ["UZI", "deep stock analysis", "equity research", "valuation", "DCF", "comps", "catalysts", "earnings", "initiation", "HTML report"],
+      "companion_skills": ["uzi-investor-panel", "uzi-lhb-analyzer", "uzi-trap-detector", "buy-side-equity-research-memo"],
+      "resource_dirs": ["assets", "personas", "references", "scripts"]
+    },
+    {
+      "id": "uzi-investor-panel",
+      "name": "uzi-investor-panel",
+      "entrypoint": "skills/uzi-investor-panel/SKILL.md",
+      "path": "skills/uzi-investor-panel",
+      "description": "Run a UZI investor-panel review to judge which famous investors would buy, hold, avoid, or debate a stock across value, growth, macro, technical, quant, and youzi perspectives.",
+      "aliases": ["投资大师评审团", "投资者陪审团", "名人投资面板", "谁会买", "panel-only"],
+      "keywords": ["investor panel", "jury vote", "Buffett", "Munger", "Duan", "growth investors", "value investors", "quant", "youzi", "holdings review"],
+      "companion_skills": ["uzi-deep-analysis", "a-share-stock-analysis", "buy-side-equity-research-memo"],
+      "resource_dirs": ["assets", "references"]
+    },
+    {
+      "id": "uzi-lhb-analyzer",
+      "name": "uzi-lhb-analyzer",
+      "entrypoint": "skills/uzi-lhb-analyzer/SKILL.md",
+      "path": "skills/uzi-lhb-analyzer",
+      "description": "Analyze 龙虎榜, hot-money seats, institution versus youzi behavior, same-sector comparison, short-term capital structure, and A-share market microstructure.",
+      "aliases": ["龙虎榜分析", "游资分析", "席位分析", "LHB", "hot money"],
+      "keywords": ["龙虎榜", "游资", "席位", "institution", "hot money", "same-sector", "microstructure", "capital structure", "A-share"],
+      "companion_skills": ["uzi-deep-analysis", "a-share-stock-analysis"],
+      "resource_dirs": ["assets", "references"]
+    },
+    {
+      "id": "uzi-trap-detector",
+      "name": "uzi-trap-detector",
+      "entrypoint": "skills/uzi-trap-detector/SKILL.md",
+      "path": "skills/uzi-trap-detector",
+      "description": "Detect trap, fraud, pump-and-dump, group-tip, teacher-call, insider-story, guaranteed-profit, sudden-surge, and other unsafe stock-promotion risks.",
+      "aliases": ["杀猪盘检测", "陷阱检测", "风险骗局", "老师带单", "群里推荐", "必涨"],
+      "keywords": ["trap detection", "fraud risk", "pump and dump", "group tip", "teacher call", "insider story", "guaranteed profit", "sudden surge", "unsafe recommendation"],
+      "companion_skills": ["a-share-stock-analysis", "uzi-deep-analysis"],
+      "resource_dirs": ["references"]
     }
   ],
   "recommended_generic_agent_files": [
     "manifest.json",
+    "AGENTS.md",
+    "README.md",
     "docs/A_SHARE_SYSTEM_EVOLUTION.md",
     "docs/CONNECTING_AGENTS.md",
     "docs/TRIGGER_EVALS.md",
     "docs/THIRD_PARTY_SOURCES.md",
-    "skills/ai-stock-picking/SKILL.md",
-    "skills/ai-stock-picking/references/five-factor-stock-selection.md",
+    "scripts/skill_router.py",
+    "scripts/validate_skills.py",
     "skills/a-share-stock-analysis/SKILL.md",
-    "skills/a-share-stock-analysis/references/five-factor-stock-selection.md",
-    "skills/stock-strategy-loop/SKILL.md",
-    "skills/stock-strategy-loop/manifest.json",
-    "skills/stock-strategy-loop/references/positions-schema.md",
-    "skills/stock-strategy-loop/references/loop-contracts.md",
-    "skills/stock-strategy-loop/tests/test_run_loop.py",
-    "skills/serenity-alpha/SKILL.md",
+    "skills/ai-stock-picking/SKILL.md",
     "skills/bayesian-intrinsic-growth-valuation/SKILL.md",
+    "skills/buy-side-equity-research-memo/SKILL.md",
     "skills/gf-dma-health-index/SKILL.md",
+    "skills/industry-panorama-cognition/SKILL.md",
+    "skills/mcp-api-key-auth/SKILL.md",
+    "skills/openclaw-stock-analyzer/SKILL.md",
+    "skills/openclaw-stock-kb/SKILL.md",
+    "skills/serenity-alpha/SKILL.md",
+    "skills/stock-daily-analysis/SKILL.md",
+    "skills/stock-data-assistant/SKILL.md",
+    "skills/stock-datasource/SKILL.md",
+    "skills/stock-mcp-query/SKILL.md",
+    "skills/stock-monitor-skill/SKILL.md",
+    "skills/stock-rt-subscribe/SKILL.md",
+    "skills/stock-strategy-loop/SKILL.md",
     "skills/tam-adj-peg/SKILL.md",
-    "skills/buy-side-equity-research-memo/SKILL.md"
+    "skills/tushare-openclaw-skill/SKILL.md",
+    "skills/tushare-plugin-builder/SKILL.md",
+    "skills/uzi/SKILL.md",
+    "skills/uzi-deep-analysis/SKILL.md",
+    "skills/uzi-investor-panel/SKILL.md",
+    "skills/uzi-lhb-analyzer/SKILL.md",
+    "skills/uzi-trap-detector/SKILL.md"
   ]
 }

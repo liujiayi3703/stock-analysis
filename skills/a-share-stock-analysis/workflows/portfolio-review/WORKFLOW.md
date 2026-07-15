@@ -9,10 +9,11 @@ Use this when the user provides holdings, positions, cost basis, watchlists, or 
 3. Ask for cost basis or holding thesis only if absent data changes the conclusion materially.
 4. Classify each holding by role: core, satellite, trade, hedge, watch, or error position.
 5. Measure concentration by sector, theme, market cap, and correlated catalysts.
-6. Review each stock using `stock-analysis` at the depth required by position size.
-7. For material positions or operation-analysis requests, apply `references/five-factor-stock-selection.md` so each action has value/quality, fundamental-base, capital-behavior, growth/policy, and risk evidence.
-8. Map actions: keep, add conditionally, reduce, replace, hedge, or watch.
-9. Provide portfolio-level risk controls.
+6. For each material holding, use `industry-panorama-cognition` when available, or load `references/industry-panorama-template.md`, and explain its segment, value-chain position, industry influence, scarce capability, and one memorable analogy when useful.
+7. Review each stock using `stock-analysis` at the depth required by position size.
+8. For material positions or operation-analysis requests, apply `references/five-factor-stock-selection.md` so each action has value/quality, fundamental-base, capital-behavior, growth/policy, and risk evidence.
+9. Map actions: keep, add conditionally, reduce, replace, hedge, or watch.
+10. Provide portfolio-level risk controls.
 
 ## Priority Rules
 
@@ -30,6 +31,7 @@ Include:
 
 - portfolio diagnosis
 - position table
+- industry panorama cognition for material holdings
 - action priority
 - what data is missing
 - next review trigger

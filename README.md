@@ -6,6 +6,14 @@ Reusable agent skills for AI-assisted stock picking, five-factor value/quality s
 
 Agents should start with `manifest.json`, then load the skill that matches the task.
 
+For fuzzy wording, use the router before choosing skills:
+
+```powershell
+python scripts/skill_router.py "帮我分析目前股票持仓，下周怎么操作" --json
+```
+
+If the router returns `choice_required: true`, ask the user to choose a focus unless they explicitly want broad analysis. For broad analysis, load the returned `load_order` from top to bottom.
+
 Default stock-picking router:
 
 ```text
@@ -52,6 +60,12 @@ If an app expects one skill folder, point it at the specific folder under `skill
 
 For apps that cannot scan a skills directory, read `manifest.json` first, then load the listed `entrypoint`.
 
+Generic agent contract:
+
+```text
+AGENTS.md
+```
+
 ## Scope
 
 This skill library helps agents:
@@ -74,6 +88,7 @@ This skill library helps agents:
 - evaluate growth stocks with Bayesian intrinsic growth, GF-DMA, and TAM-Adj-PEG frameworks
 - generate buy-side equity research memos
 - output decision-support suggestions with risk controls
+- route vague user wording to multiple relevant skills and request a focus choice when too many paths match
 
 It does not guarantee investment returns. Every suggestion must separate evidence, inference, uncertainty, and risk controls.
 

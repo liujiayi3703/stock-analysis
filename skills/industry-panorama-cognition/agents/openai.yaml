@@ -1,0 +1,7 @@
+interface:
+  display_name: "行业全景认知"
+  short_description: "解释股票细分领域、产业链位置、行业影响和类比"
+  default_prompt: "Use $industry-panorama-cognition to explain a stock's segment, value-chain position, industry impact, scarce capability, and analogy."
+
+policy:
+  allow_implicit_invocation: true

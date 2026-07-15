@@ -1,5 +1,13 @@
 # Portfolio Review
 
+## 行业全景认知
+
+Use this section for material holdings. Load `references/industry-panorama-template.md`.
+
+| 股票 | 细分领域 | 产业链位置 | 行业影响 | 稀缺能力/护城河 | 类比讲解 | 需要继续核验 |
+|---|---|---|---|---|---|---|
+|  |  |  |  |  |  |  |
+
 ## Five-Factor Holding Review
 
 Use this section for material holdings or when the user asks for operation analysis using value/quality, fundamental base, capital behavior, growth/policy, and risk avoidance.

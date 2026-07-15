@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+
+.stock-loop/
+**/.stock-loop/
+positions.json
+latest_screenshots.json
+Screenshot_*
+
+.env
+.env.*
+.venv/
+venv/
+.superpowers/
+docs/superpowers/

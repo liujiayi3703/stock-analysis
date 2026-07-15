@@ -1,0 +1,7 @@
+interface:
+  display_name: "OpenClaw Stock KB"
+  short_description: "股票策略、指标、风控和回测知识库"
+  default_prompt: "Use $openclaw-stock-kb to reference stock strategy, indicators, risk management, and backtesting knowledge."
+
+policy:
+  allow_implicit_invocation: true

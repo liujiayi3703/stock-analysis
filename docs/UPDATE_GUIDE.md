@@ -11,13 +11,18 @@ Keep this suite easy for other agents to learn.
 5. Put deterministic checks in `scripts/`.
 6. Keep imported Serenity skills as independent folders under `skills/<skill-name>/`.
 7. Update root `manifest.json` when skill paths or descriptions change.
-8. Run validation before publishing changes.
+8. Keep `scripts/skill_router.py` and `scripts/validate_skills.py` green when adding, removing, or renaming skills.
+9. Run validation before publishing changes.
 
 ## Local Validation
 
 From the repository root:
 
 ```powershell
+$env:PYTHONUTF8=1
+python scripts/validate_skills.py
+python -m unittest discover tests
+python scripts/skill_router.py "帮我分析目前股票持仓，下周怎么操作" --json
 python skills/a-share-stock-analysis/scripts/validate_holdings_csv.py --help
 python skills/a-share-stock-analysis/scripts/validate_market_dataset.py --help
 python skills/a-share-stock-analysis/scripts/validate_trade_signals.py --help
@@ -30,26 +35,28 @@ python skills/stock-strategy-loop/scripts/run_loop.py validate-positions --posit
 Validate each skill folder with Codex's skill validator:
 
 ```powershell
-python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\a-share-stock-analysis
-python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\stock-strategy-loop
-python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\ai-stock-picking
-python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\serenity-alpha
-python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\bayesian-intrinsic-growth-valuation
-python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\gf-dma-health-index
-python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\tam-adj-peg
-python C:\Users\liuji\.codex\skills\.system\skill-creator\scripts\quick_validate.py skills\buy-side-equity-research-memo
+$env:PYTHONUTF8=1
+$SKILL_CREATOR = "<path-to-skill-creator>"
+python "$SKILL_CREATOR\scripts\quick_validate.py" skills\a-share-stock-analysis
+python "$SKILL_CREATOR\scripts\quick_validate.py" skills\stock-strategy-loop
+python "$SKILL_CREATOR\scripts\quick_validate.py" skills\ai-stock-picking
+python "$SKILL_CREATOR\scripts\quick_validate.py" skills\serenity-alpha
+python "$SKILL_CREATOR\scripts\quick_validate.py" skills\bayesian-intrinsic-growth-valuation
+python "$SKILL_CREATOR\scripts\quick_validate.py" skills\gf-dma-health-index
+python "$SKILL_CREATOR\scripts\quick_validate.py" skills\tam-adj-peg
+python "$SKILL_CREATOR\scripts\quick_validate.py" skills\buy-side-equity-research-memo
 ```
 
 If this repository is copied into the shared skills library, run the shared audit script after changing skills:
 
 ```powershell
-C:\Users\liuji\Desktop\Skills\tools\Audit-Skills.ps1
+& "<path-to-shared-skills>\tools\Audit-Skills.ps1"
 ```
 
 On this machine the shared library may also appear under:
 
 ```powershell
-C:\Users\liuji\Desktop\科研Skills\
+<path-to-shared-skills>\
 ```
 
 Use the path that exists on the current machine.

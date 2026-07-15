@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 1,
-      "prompt": "我刚把今天的股票持仓截图放到 E:\\生活中的资料\\学习资料\\投资理财\\stock 里了，请跑完整的盘后闭环：识别最新截图、生成持仓策略、做近3年回测并给出报告。",
+      "prompt": "我刚把今天的股票持仓截图放到账户工作区里了，请跑完整的盘后闭环：识别最新截图、生成持仓策略、做近3年回测并给出报告。",
       "expected_output": "Scans screenshots, requires or creates positions.json via vision, validates holdings, runs the loop, and returns report paths with key actions.",
       "files": []
     },
@@ -21,4 +21,3 @@
     }
   ]
 }
-
